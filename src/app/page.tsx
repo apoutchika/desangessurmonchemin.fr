@@ -1,5 +1,6 @@
-import Link from 'next/link';
-import { getJourneyStats } from '@/data/journey';
+import Link from "next/link";
+import { getJourneyStats } from "@/data/journey";
+import { formatNumber } from "@/lib/formatNumber";
 
 export default function HomePage() {
   const stats = getJourneyStats();
@@ -14,9 +15,10 @@ export default function HomePage() {
             Sur le <em>Chemin</em>
           </h1>
           <p className="home-hero__subtitle">
-            Soixante jours de marche. {Math.round(stats.totalDistance)} kilomètres.{' '}
-            {stats.totalElevationGain.toLocaleString('fr-FR')} mètres de dénivelé.
-            Une seule question : qu'est-ce qu'on laisse derrière soi quand on marche vers l'essentiel ?
+            Soixante jours de marche. {Math.round(stats.totalDistance)}{" "}
+            kilomètres. {formatNumber(stats.totalElevationGain, null, 0)} mètres
+            de dénivelé. Une seule question : qu'est-ce qu'on laisse derrière
+            soi quand on marche vers l'essentiel ?
           </p>
           <div className="home-ctas">
             <Link href="/livre" className="btn btn-primary">
@@ -30,24 +32,36 @@ export default function HomePage() {
       </section>
 
       {/* Stats globales */}
-      <section style={{ background: 'var(--sand)', padding: 'clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 3rem)' }}>
+      <section
+        style={{
+          background: "var(--sand)",
+          padding: "clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 3rem)",
+        }}
+      >
         <div className="container">
-          <div className="day-stats" style={{ maxWidth: 700, margin: '0 auto' }}>
+          <div
+            className="day-stats"
+            style={{ maxWidth: 700, margin: "0 auto" }}
+          >
             <div className="day-stats__item">
               <span className="day-stats__value">{stats.totalDays}</span>
               <span className="day-stats__label">Jours de marche</span>
             </div>
             <div className="day-stats__item">
-              <span className="day-stats__value">{Math.round(stats.totalDistance)}</span>
+              <span className="day-stats__value">
+                {formatNumber(stats.totalDistance, "", 0)}
+              </span>
               <span className="day-stats__label">Kilomètres</span>
             </div>
             <div className="day-stats__item">
-              <span className="day-stats__value">{stats.totalElevationGain.toLocaleString('fr-FR')}</span>
+              <span className="day-stats__value">
+                {formatNumber(stats.totalElevationGain, "", 0)}
+              </span>
               <span className="day-stats__label">Mètres D+</span>
             </div>
             <div className="day-stats__item">
               <span className="day-stats__value">
-                {stats.startCity?.split(' ')[0]}
+                {stats.startCity?.split(" ")[0]}
               </span>
               <span className="day-stats__label">Ville de départ</span>
             </div>
@@ -58,16 +72,24 @@ export default function HomePage() {
       {/* Features */}
       <section className="home-features">
         <div className="container">
-          <h2 style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
-            fontWeight: 600,
-            color: 'var(--ink)',
-            marginBottom: '0.5rem',
-          }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
+              fontWeight: 600,
+              color: "var(--ink)",
+              marginBottom: "0.5rem",
+            }}
+          >
             Un livre à votre rythme
           </h2>
-          <p style={{ color: 'var(--stone)', fontFamily: 'var(--font-serif)', fontSize: '1.125rem' }}>
+          <p
+            style={{
+              color: "var(--stone)",
+              fontFamily: "var(--font-serif)",
+              fontSize: "1.125rem",
+            }}
+          >
             Lisez en ligne, emportez-le ou soutenez l'auteur.
           </p>
 
@@ -101,16 +123,35 @@ export default function HomePage() {
 }
 
 function FeatureCard({
-  icon, title, desc, href, cta,
+  icon,
+  title,
+  desc,
+  href,
+  cta,
 }: {
-  icon: string; title: string; desc: string; href: string; cta: string;
+  icon: string;
+  title: string;
+  desc: string;
+  href: string;
+  cta: string;
 }) {
   return (
-    <Link href={href} className="feature-card" style={{ display: 'block', textDecoration: 'none' }}>
+    <Link
+      href={href}
+      className="feature-card"
+      style={{ display: "block", textDecoration: "none" }}
+    >
       <div className="feature-card__icon">{icon}</div>
       <h3 className="feature-card__title">{title}</h3>
       <p className="feature-card__desc">{desc}</p>
-      <p style={{ marginTop: '1rem', fontSize: '0.8125rem', color: 'var(--rust)', fontWeight: 500 }}>
+      <p
+        style={{
+          marginTop: "1rem",
+          fontSize: "0.8125rem",
+          color: "var(--rust)",
+          fontWeight: 500,
+        }}
+      >
         {cta} →
       </p>
     </Link>

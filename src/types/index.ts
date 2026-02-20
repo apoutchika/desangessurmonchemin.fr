@@ -8,7 +8,7 @@ export interface LatLng {
 }
 
 export interface Place {
-  latlng: LatLng;
+  latlng: LatLng | null;
   city: string;
   name: string; // Nom de l'hébergement
   link?: string; // Lien vers l'hébergement
@@ -18,9 +18,9 @@ export interface DayStats {
   distance: number; // km du jour
   elevationGain: number; // D+ du jour en mètres
   elevationLoss: number; // D- du jour en mètres
-  totalDistance?: number; // km cumulés depuis le début
-  totalElevationGain?: number; // D+ cumulés
-  totalElevationLoss?: number; // D+ cumulés
+  totalDistance: number; // km cumulés depuis le début
+  totalElevationGain: number; // D+ cumulés
+  totalElevationLoss: number; // D+ cumulés
 }
 
 export interface Photo {
@@ -37,22 +37,21 @@ export interface JourneyDay {
   id: number; // Ordre absolu (0 = AP, 1..N = jours, N+1 = PF)
   type: PageType;
   day: number | null; // Numéro du jour de marche (1..N), absent pour AP/PF
-  date: string | null; // ISO date string "YYYY-MM-DD"
-  title?: string; // Titre custom pour AP/PF, sinon généré automatiquement
+  date: Date | null; // ISO date string "YYYY-MM-DD"
+  title: string | null; // Titre custom pour AP/PF, sinon généré automatiquement
   from: Place | null;
   to: Place | null;
   stats?: DayStats;
-  gpx: string | null; // Contenu GPX brut (XML string)
-  gpxPoints?: GpxPoint[]; // Points parsés (généré côté server depuis gpx)
+  gpx: GpxPoint[] | null; // Points parsés (généré côté server depuis gpx)
   content: string; // Markdown ou texte brut
   photos?: Photo[];
 }
 
 export interface GpxPoint {
+  id: string;
   lat: number;
   lng: number;
-  ele?: number; // Altitude en mètres
-  time?: string; // ISO timestamp
+  ele: number; // Altitude en mètres
 }
 
 // Statistiques globales du voyage
