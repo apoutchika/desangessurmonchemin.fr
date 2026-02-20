@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const links = [
-  { href: '/',              label: 'Accueil' },
-  { href: '/livre',         label: 'Livre interactif' },
-  { href: '/telechargement', label: 'Télécharger' },
-  { href: '/don',           label: 'Faire un don' },
+  { href: "/", label: "Accueil" },
+  { href: "/livre", label: "Livre interactif" },
+  { href: "/telechargement", label: "Télécharger" },
+  { href: "/don", label: "Faire un don" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function SiteNav() {
@@ -21,12 +22,12 @@ export function SiteNav() {
         Sur&nbsp;le&nbsp;Chemin
       </Link>
 
-      <ul className={`site-nav__links${open ? ' site-nav__links--open' : ''}`}>
-        {links.map(l => (
+      <ul className={`site-nav__links${open ? " site-nav__links--open" : ""}`}>
+        {links.map((l) => (
           <li key={l.href}>
             <Link
               href={l.href}
-              aria-current={pathname === l.href ? 'page' : undefined}
+              aria-current={pathname === l.href ? "page" : undefined}
               onClick={() => setOpen(false)}
             >
               {l.label}
@@ -37,10 +38,10 @@ export function SiteNav() {
 
       <button
         className="nav-mobile-toggle"
-        aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
-        onClick={() => setOpen(o => !o)}
+        aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+        onClick={() => setOpen((o) => !o)}
       >
-        {open ? '✕' : '☰'}
+        {open ? "✕" : "☰"}
       </button>
     </nav>
   );

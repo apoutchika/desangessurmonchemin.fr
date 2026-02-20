@@ -7,7 +7,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  ReferenceLine,
 } from "recharts";
 import type { TooltipProps } from "recharts";
 import { emitter } from "@/lib/events";
