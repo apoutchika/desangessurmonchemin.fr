@@ -1,9 +1,9 @@
-import type { JourneyDay, PageNavigation } from '@/types';
-import Link from 'next/link';
-import { DayStats } from './DayStats';
-import { DayMap } from './DayMap';
-import { DayGallery } from './DayGallery';
-import { ProseContent } from './ProseContent';
+import type { JourneyDay, PageNavigation } from "@/types";
+import Link from "next/link";
+import { DayStats } from "./DayStats";
+import { DayMap } from "./DayMap";
+import { DayGallery } from "./DayGallery";
+import { ProseContent } from "./ProseContent";
 
 interface Props {
   day: JourneyDay;
@@ -11,14 +11,14 @@ interface Props {
 }
 
 export function DayPage({ day, nav }: Props) {
-  const isJour = day.type === 'jour';
+  const isJour = day.type === "jour";
 
   const formattedDate = day.date
-    ? new Intl.DateTimeFormat('fr-FR', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
+    ? new Intl.DateTimeFormat("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
       }).format(new Date(day.date))
     : null;
 
@@ -31,21 +31,30 @@ export function DayPage({ day, nav }: Props) {
         )}
 
         <h1 className="day-header__title">
-          {isJour
-            ? `${day.from?.city} → ${day.to?.city}`
-            : day.title}
+          {isJour ? `${day.from?.city} → ${day.to?.city}` : day.title}
         </h1>
 
         {formattedDate && (
           <div className="day-header__date">{formattedDate}</div>
         )}
 
-        {day.tags && day.tags.length > 0 && (
-          <div className="tags" style={{ marginTop: '1rem' }}>
-            {day.tags.map(t => (
-              <span key={t} className="tag">{t}</span>
-            ))}
-          </div>
+        {day.fromMemory && (
+          <span
+            style={{
+              display: "inline-block",
+              fontSize: "0.6875rem",
+              fontFamily: "var(--font-sans)",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--muted)",
+              border: "1px solid var(--line)",
+              borderRadius: "100px",
+              padding: "0.2rem 0.625rem",
+              marginTop: "0.5rem",
+            }}
+          >
+            De mémoire
+          </span>
         )}
 
         <div className="day-header__divider" />
@@ -55,9 +64,7 @@ export function DayPage({ day, nav }: Props) {
       {isJour && day.stats && <DayStats stats={day.stats} />}
 
       {/* Carte interactive */}
-      {isJour && day.from && day.to && (
-        <DayMap day={day} />
-      )}
+      {isJour && day.from && day.to && <DayMap day={day} />}
 
       {/* Texte */}
       <ProseContent content={day.content} />
@@ -74,10 +81,15 @@ export function DayPage({ day, nav }: Props) {
             <span className="day-nav__direction">← Précédent</span>
             <span className="day-nav__label">{nav.prev.label}</span>
           </Link>
-        ) : <div />}
+        ) : (
+          <div />
+        )}
 
         {nav.next && (
-          <Link href={`/livre/${nav.next.slug}`} className="day-nav__link day-nav__link--next">
+          <Link
+            href={`/livre/${nav.next.slug}`}
+            className="day-nav__link day-nav__link--next"
+          >
             <span className="day-nav__direction">Suivant →</span>
             <span className="day-nav__label">{nav.next.label}</span>
           </Link>

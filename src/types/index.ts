@@ -45,6 +45,7 @@ export interface JourneyDay {
   gpx: GpxPoint[] | null; // Points parsés (généré côté server depuis gpx)
   content: string; // Markdown ou texte brut
   photos?: Photo[];
+  fromMemory: boolean;
 }
 
 export interface GpxPoint {
