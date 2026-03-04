@@ -27,6 +27,11 @@ export function LivreSidebar() {
           label = `Jour ${day.day}`;
         }
 
+        let city = `${day.from?.city} → ${day.to?.city} 3`;
+        if (day.from?.city === day.to?.city) {
+          city = day.from?.city ?? "";
+        }
+
         return (
           <Link
             key={day.id}
@@ -50,7 +55,7 @@ export function LivreSidebar() {
                   marginTop: "1px",
                 }}
               >
-                {day.from.city} → {day.to.city}
+                {city}
               </span>
             )}
           </Link>

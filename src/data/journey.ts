@@ -41,6 +41,11 @@ export function getNavigation(current: JourneyDay) {
 export function getPageLabel(day: JourneyDay): string {
   if (day.type === "avant-propos") return day.title ?? "Avant-propos";
   if (day.type === "postface") return day.title ?? "Postface";
+
+  if (day.from?.city === day.to?.city) {
+    return `Jour ${day.day} — ${day.from?.city}`;
+  }
+
   return `Jour ${day.day} — ${day.from?.city} → ${day.to?.city}`;
 }
 

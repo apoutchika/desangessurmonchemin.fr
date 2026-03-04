@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type { JourneyDay, PageNavigation } from "@/types";
 import Link from "next/link";
 import { DayStats } from "./DayStats";
@@ -22,6 +23,14 @@ export function DayPage({ day, nav }: Props) {
       }).format(new Date(day.date))
     : null;
 
+  const title = useMemo(() => {
+    if (!isJour) return day.title;
+    if (day.from?.city === day.to?.city) {
+      return day.from?.city;
+    }
+    return `${day.from?.city} → ${day.to?.city}`;
+  }, []);
+
   return (
     <article className="livre-content animate-slide-up">
       {/* En-tête */}
@@ -30,9 +39,7 @@ export function DayPage({ day, nav }: Props) {
           <div className="day-header__eyebrow">Jour {day.day}</div>
         )}
 
-        <h1 className="day-header__title">
-          {isJour ? `${day.from?.city} → ${day.to?.city}` : day.title}
-        </h1>
+        <h1 className="day-header__title">{title}</h1>
 
         {formattedDate && (
           <div className="day-header__date">{formattedDate}</div>
