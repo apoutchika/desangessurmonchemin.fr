@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import type { TooltipProps } from "recharts";
 import { emitter } from "@/lib/events";
-import type { GpxPoint } from "@/types";
+import type { GpxPoint } from "@/domain";
 import { getElevationProfile } from "@/lib/gpx";
 import { formatNumber } from "@/lib/formatNumber";
 

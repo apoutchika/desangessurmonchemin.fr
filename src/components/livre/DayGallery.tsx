@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import type { Photo } from '@/types';
+import type { Photo } from '@/domain';
 
 interface Props {
   photos: Photo[];

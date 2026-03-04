@@ -3,7 +3,8 @@
    Typographie éditoriale, teintes naturelles, design de voyage
    ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&family=Playfair+Display:ital,wght@1,400&display=swap");
 
 /* ---- Variables ---- */
 :root {
@@ -24,7 +25,7 @@
   --line: rgba(92, 79, 58, 0.15);
 
   /* Typographie */
-  --font-serif: "Cormorant Garamond", "Georgia", serif;
+  --font-serif: "EB Garamond", "Georgia", serif;
   --font-sans: "Jost", sans-serif;
   --font-italic: "Playfair Display", serif;
 
@@ -81,12 +82,13 @@ body {
 /* ---- Typographie prose ---- */
 .prose {
   font-family: var(--font-serif);
-  font-size: clamp(1.125rem, 2.2vw, 1.3125rem);
+  /* EB Garamond est plus petite optiquement que Cormorant, on augmente légèrement */
+  font-size: clamp(1.1875rem, 2.3vw, 1.375rem);
   font-weight: 400;
-  line-height: 1.85;
+  line-height: 1.75; /* Légèrement plus serré pour EB Garamond */
   color: var(--earth);
   max-width: var(--max-prose);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em; /* Moins d'espacement pour EB Garamond */
 }
 
 .prose p {
@@ -108,7 +110,8 @@ body {
 
 .prose h2 {
   font-family: var(--font-serif);
-  font-size: clamp(1.4rem, 2.5vw, 1.75rem);
+  /* Titres légèrement plus grands pour compenser */
+  font-size: clamp(1.5rem, 2.6vw, 1.875rem);
   font-weight: 600;
   color: var(--ink);
   margin-block: 2em 0.5em;
@@ -289,7 +292,8 @@ a:hover {
 
 .day-header__title {
   font-family: var(--font-serif);
-  font-size: clamp(2rem, 4vw, 3.25rem);
+  /* Augmenté pour EB Garamond qui est optiquement plus petite */
+  font-size: clamp(2.125rem, 4.2vw, 3.5rem);
   font-weight: 600;
   line-height: 1.15;
   color: var(--ink);
@@ -298,8 +302,9 @@ a:hover {
 
 .day-header__subtitle {
   font-family: var(--font-serif);
-  font-size: clamp(1.125rem, 2vw, 1.375rem);
-  font-weight: 300;
+  /* Légèrement augmenté */
+  font-size: clamp(1.1875rem, 2.1vw, 1.4375rem);
+  font-weight: 400; /* 400 au lieu de 300 pour EB Garamond */
   font-style: italic;
   color: var(--stone);
   margin-bottom: 1.5rem;
@@ -593,8 +598,9 @@ a:hover {
 
 .home-hero__title {
   font-family: var(--font-serif);
-  font-size: clamp(3rem, 8vw, 7rem);
-  font-weight: 300;
+  /* Augmenté pour EB Garamond */
+  font-size: clamp(3.25rem, 8.5vw, 7.5rem);
+  font-weight: 400; /* 400 au lieu de 300 pour EB Garamond */
   line-height: 1.05;
   color: var(--ink);
   margin-bottom: 1.5rem;
@@ -610,8 +616,9 @@ a:hover {
 
 .home-hero__subtitle {
   font-family: var(--font-serif);
-  font-size: clamp(1rem, 2vw, 1.3125rem);
-  font-weight: 300;
+  /* Légèrement augmenté */
+  font-size: clamp(1.0625rem, 2.1vw, 1.375rem);
+  font-weight: 400; /* 400 au lieu de 300 */
   color: var(--stone);
   max-width: 44ch;
   margin-inline: auto;

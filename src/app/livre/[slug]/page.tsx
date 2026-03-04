@@ -1,15 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { journeyData, getDayBySlug, getNavigation, getPageLabel } from '@/data/journey';
+import { getJourney, getDayBySlug, getNavigation } from '@/data/journey';
+import { serializeDay } from '@/domain';
 import { DayPage } from '@/components/livre/DayPage';
 
 // Génération statique de toutes les pages
 export function generateStaticParams() {
-  return journeyData.map(day => {
-    if (day.type === 'avant-propos') return { slug: 'avant-propos' };
-    if (day.type === 'postface') return { slug: 'postface' };
-    return { slug: `jour-${day.day}` };
-  });
+  const journey = getJourney();
+  return journey.getAllDays().map(day => ({ slug: day.getSlug() }));
 }
 
 export async function generateMetadata({
@@ -21,7 +19,7 @@ export async function generateMetadata({
   const day = getDayBySlug(slug);
   if (!day) return {};
   return {
-    title: getPageLabel(day),
+    title: day.getLabel(),
     description: day.content.slice(0, 160).trim().replace(/\s+/g, ' '),
   };
 }
@@ -37,5 +35,8 @@ export default async function LivreSlugPage({
 
   const nav = getNavigation(day);
 
-  return <DayPage day={day} nav={nav} />;
+  // Sérialiser pour passer au Client Component
+  const serializedDay = serializeDay(day);
+
+  return <DayPage day={serializedDay} nav={nav} />;
 }

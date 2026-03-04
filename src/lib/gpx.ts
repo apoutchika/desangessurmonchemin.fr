@@ -1,4 +1,4 @@
-import type { GpxPoint } from '@/types';
+import type { GpxPoint } from '@/domain';
 
 // ============================================================
 // GPX PARSER
@@ -13,14 +13,16 @@ export function parseGpx(gpxString: string): GpxPoint[] {
     const doc = parser.parseFromString(gpxString, 'application/xml');
     const trkpts = doc.querySelectorAll('trkpt');
 
-    return Array.from(trkpts).map(pt => ({
-      lat: parseFloat(pt.getAttribute('lat') ?? '0'),
-      lng: parseFloat(pt.getAttribute('lon') ?? '0'),
-      ele: pt.querySelector('ele')
-        ? parseFloat(pt.querySelector('ele')!.textContent ?? '0')
-        : undefined,
-      time: pt.querySelector('time')?.textContent ?? undefined,
-    }));
+    return Array.from(trkpts).map((pt, idx) => 
+      GpxPoint.create(
+        `gpx-${idx}`,
+        parseFloat(pt.getAttribute('lat') ?? '0'),
+        parseFloat(pt.getAttribute('lon') ?? '0'),
+        pt.querySelector('ele')
+          ? parseFloat(pt.querySelector('ele')!.textContent ?? '0')
+          : 0
+      )
+    );
   } catch {
     console.error('GPX parsing error');
     return [];
@@ -34,14 +36,12 @@ export function getElevationProfile(
   if (!points.length) return [];
 
   let totalDist = 0;
-  return points
-    .filter(p => p.ele !== undefined)
-    .map((p, i, arr) => {
-      if (i > 0) {
-        totalDist += haversineKm(arr[i - 1], p);
-      }
-      return { distance: Math.round(totalDist * 10) / 10, elevation: p.ele! };
-    });
+  return points.map((p, i, arr) => {
+    if (i > 0) {
+      totalDist += haversineKm(arr[i - 1], p);
+    }
+    return { distance: Math.round(totalDist * 10) / 10, elevation: p.ele };
+  });
 }
 
 // Calcul distance haversine entre deux points
@@ -62,11 +62,9 @@ export function computeElevationStats(points: GpxPoint[]) {
   let dPlus = 0;
   let dMinus = 0;
   for (let i = 1; i < points.length; i++) {
-    if (points[i].ele !== undefined && points[i - 1].ele !== undefined) {
-      const diff = points[i].ele! - points[i - 1].ele!;
-      if (diff > 0) dPlus += diff;
-      else dMinus += Math.abs(diff);
-    }
+    const diff = points[i].ele - points[i - 1].ele;
+    if (diff > 0) dPlus += diff;
+    else dMinus += Math.abs(diff);
   }
   return { elevationGain: Math.round(dPlus), elevationLoss: Math.round(dMinus) };
 }

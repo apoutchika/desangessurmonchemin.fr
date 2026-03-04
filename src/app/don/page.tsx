@@ -11,7 +11,7 @@ import { useState } from "react";
 
 const AMOUNTS = [5, 10, 15, 20, 30, 50];
 
-const CRYPTO_ICONS: Record<string, TokenIconProps> = {
+const CRYPTO_ICONS: Record<string, React.ComponentType<TokenIconProps>> = {
   btc: TokenBTC,
   eth: TokenETH,
   "usdc-polygon": TokenUSDC,
@@ -133,7 +133,38 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function CryptoCard({ wallet }: { wallet: (typeof CRYPTO_WALLETS)[0] }) {
-  const Icon = CRYPTO_ICONS[wallet.id];
+  const renderIcon = () => {
+    switch (wallet.id) {
+      case "btc":
+        return <TokenBTC size={28} variant="branded" />;
+      case "eth":
+        return <TokenETH size={28} variant="branded" />;
+      case "usdc-polygon":
+        return <TokenUSDC size={28} variant="branded" />;
+      case "sol":
+        return <TokenSOL size={28} variant="branded" />;
+      default:
+        return (
+          <span
+            style={{
+              width: "28px",
+              height: "28px",
+              borderRadius: "50%",
+              background: wallet.color,
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "0.875rem",
+              fontWeight: "600",
+              flexShrink: 0,
+            }}
+          >
+            {wallet.icon}
+          </span>
+        );
+    }
+  };
 
   return (
     <div
@@ -153,27 +184,7 @@ function CryptoCard({ wallet }: { wallet: (typeof CRYPTO_WALLETS)[0] }) {
           marginBottom: "0.75rem",
         }}
       >
-        {Icon ? (
-          <Icon size={28} variant="branded" />
-        ) : (
-          <span
-            style={{
-              width: "28px",
-              height: "28px",
-              borderRadius: "50%",
-              background: wallet.color,
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "0.875rem",
-              fontWeight: "600",
-              flexShrink: 0,
-            }}
-          >
-            {wallet.icon}
-          </span>
-        )}
+        {renderIcon()}
 
         <div>
           <span

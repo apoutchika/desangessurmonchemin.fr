@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { JourneyDay, GpxPoint } from "@/types";
+import type { Day, GpxPoint } from "@/domain";
 import { emitter } from "@/lib/events";
 import { DayElevation } from "./DayElevation";
 
@@ -63,7 +63,7 @@ function buildHoverIcon(L: typeof import("leaflet")) {
 // ─── Composant ────────────────────────────────────────────────────────────────
 
 interface Props {
-  day: JourneyDay;
+  day: Day;
 }
 
 export function DayMap({ day }: Props) {
@@ -73,7 +73,7 @@ export function DayMap({ day }: Props) {
   const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
-    if (!mapRef.current || !day.from || !day.to) return;
+    if (!mapRef.current || !day.hasMap()) return;
 
     let map: import("leaflet").Map;
     let animationFrame: number;
@@ -94,10 +94,7 @@ export function DayMap({ day }: Props) {
       });
 
       // ── Carte ──────────────────────────────────────────────────────────────
-      const center: [number, number] = [
-        (day.from!.latlng!.lat + day.to!.latlng!.lat) / 2,
-        (day.from!.latlng!.lng + day.to!.latlng!.lng) / 2,
-      ];
+      const center = day.getMapCenter()!;
 
       const container = mapRef.current! as HTMLElement & {
         _leaflet_id?: number;
@@ -121,7 +118,10 @@ export function DayMap({ day }: Props) {
       ).addTo(map);
 
       // ── Marqueurs hébergements ─────────────────────────────────────────────
-      L.marker([day.from!.latlng!.lat, day.from!.latlng!.lng], {
+      const fromLatLng = day.from!.latlng!.toTuple();
+      const toLatLng = day.to!.latlng!.toTuple();
+
+      L.marker(fromLatLng, {
         icon: buildRoundIcon(L, "A", "#5a7a5f"),
       })
         .addTo(map)
@@ -134,7 +134,7 @@ export function DayMap({ day }: Props) {
           ),
         );
 
-      L.marker([day.to!.latlng!.lat, day.to!.latlng!.lng], {
+      L.marker(toLatLng, {
         icon: buildRoundIcon(L, "B", "#b5603a"),
       })
         .addTo(map)
@@ -143,11 +143,8 @@ export function DayMap({ day }: Props) {
         );
 
       // ── GPX ───────────────────────────────────────────────────────────────
-      let fullLatLngs: [number, number][] = [];
-      setGpxPoints(day?.gpx ?? []);
-      if (day.gpx) {
-        fullLatLngs = day.gpx.map((p) => [p.lat, p.lng]);
-      }
+      setGpxPoints(day.gpx);
+      const fullLatLngs = day.getGpxLatLngs();
 
       // Tracé fantôme (fond gris)
       L.polyline(fullLatLngs, {
@@ -163,8 +160,8 @@ export function DayMap({ day }: Props) {
         opacity: 0.9,
       }).addTo(map);
 
-      if (fullLatLngs.length > 1) {
-        map.fitBounds(L.polyline(fullLatLngs).getBounds(), {
+      if (day.getAllGpxLatLngs().length > 1) {
+        map.fitBounds(L.polyline(day.getAllGpxLatLngs()).getBounds(), {
           padding: [30, 30],
         });
       }
@@ -249,7 +246,7 @@ export function DayMap({ day }: Props) {
         )}
       </div>
 
-      {gpxPoints.length > 1 && <DayElevation points={gpxPoints} />}
+      {day.hasElevationProfile() && <DayElevation points={gpxPoints} />}
     </div>
   );
 }

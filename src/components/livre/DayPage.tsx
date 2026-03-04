@@ -1,5 +1,7 @@
-import { useMemo } from "react";
-import type { JourneyDay, PageNavigation } from "@/types";
+"use client";
+
+import type { SerializedDay, PageNavigation } from "@/domain";
+import { useDay } from "@/domain";
 import Link from "next/link";
 import { DayStats } from "./DayStats";
 import { DayMap } from "./DayMap";
@@ -7,29 +9,17 @@ import { DayGallery } from "./DayGallery";
 import { ProseContent } from "./ProseContent";
 
 interface Props {
-  day: JourneyDay;
+  day: SerializedDay;
   nav: PageNavigation;
 }
 
-export function DayPage({ day, nav }: Props) {
-  const isJour = day.type === "jour";
-
-  const formattedDate = day.date
-    ? new Intl.DateTimeFormat("fr-FR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }).format(new Date(day.date))
-    : null;
-
-  const title = useMemo(() => {
-    if (!isJour) return day.title;
-    if (day.from?.city === day.to?.city) {
-      return day.from?.city;
-    }
-    return `${day.from?.city} → ${day.to?.city}`;
-  }, []);
+export function DayPage({ day: serializedDay, nav }: Props) {
+  // Reconstruire l'entité Day côté client
+  const day = useDay(serializedDay);
+  
+  const isJour = day.isJour();
+  const formattedDate = day.getFormattedDate();
+  const title = day.getTitle();
 
   return (
     <article className="livre-content animate-slide-up">
@@ -68,18 +58,16 @@ export function DayPage({ day, nav }: Props) {
       </header>
 
       {/* Stats du jour */}
-      {isJour && day.stats && <DayStats stats={day.stats} />}
+      {day.hasStats() && <DayStats stats={day.stats!} />}
 
       {/* Carte interactive */}
-      {isJour && day.from && day.to && <DayMap day={day} />}
+      {day.hasMap() && <DayMap day={day} />}
 
       {/* Texte */}
       <ProseContent content={day.content} />
 
       {/* Galerie */}
-      {day.photos && day.photos.length > 0 && (
-        <DayGallery photos={day.photos} />
-      )}
+      {day.hasPhotos() && <DayGallery photos={day.photos} />}
 
       {/* Navigation */}
       <nav className="day-nav" aria-label="Navigation entre les journées">

@@ -1,5 +1,5 @@
 import { formatNumber } from "@/lib/formatNumber";
-import type { DayStats as DayStatsType } from "@/types";
+import type { DayStats as DayStatsType } from "@/domain";
 
 interface Props {
   stats: DayStatsType;

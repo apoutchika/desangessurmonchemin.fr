@@ -2,34 +2,37 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { journeyData, getSlug, getPageLabel } from "@/data/journey";
-import { JourneyDay } from "@/types";
+import { getJourney } from "@/data/journey";
 
 export function LivreSidebar() {
   const pathname = usePathname();
+  const journey = getJourney();
+  const days = journey.getAllDays();
 
   return (
     <aside className="livre-sidebar">
       <div className="livre-sidebar__title">Table des matières</div>
 
-      {journeyData.map((day) => {
-        const slug = getSlug(day);
+      {days.map((day) => {
+        const slug = day.getSlug();
         const href = `/livre/${slug}`;
         const isActive = pathname === href;
-        const isSpecial = day.type !== "jour";
+        const isSpecial = !day.isJour();
 
         let label: string;
-        if (day.type === "avant-propos") {
+        if (day.isAvantPropos()) {
           label = day.title ?? "Avant-propos";
-        } else if (day.type === "postface") {
+        } else if (day.isPostface()) {
           label = day.title ?? "Postface";
         } else {
           label = `Jour ${day.day}`;
         }
 
-        let city = `${day.from?.city} → ${day.to?.city} 3`;
-        if (day.from?.city === day.to?.city) {
-          city = day.from?.city ?? "";
+        let city = "";
+        if (day.isJour() && day.from && day.to) {
+          city = day.from.city === day.to.city 
+            ? day.from.city 
+            : `${day.from.city} → ${day.to.city}`;
         }
 
         return (
@@ -43,10 +46,10 @@ export function LivreSidebar() {
             ]
               .filter(Boolean)
               .join(" ")}
-            title={isSpecial ? label : getPageLabel(day)}
+            title={isSpecial ? label : day.getLabel()}
           >
             {label}
-            {day.type === "jour" && day.from && day.to && (
+            {day.isJour() && city && (
               <span
                 style={{
                   display: "block",
