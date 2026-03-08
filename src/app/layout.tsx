@@ -11,6 +11,13 @@ export const metadata: Metadata = {
   description:
     'Soixante jours de marche, mille deux cents kilomètres, un seul fil conducteur : ' +
     'la quête de ce que la lenteur révèle.',
+  icons: {
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'fr_FR',

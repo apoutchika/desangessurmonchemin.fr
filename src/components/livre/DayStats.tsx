@@ -8,32 +8,7 @@ interface Props {
 
 const SEP = " ";
 
-export function DayStats({ stats, compact = false }: Props) {
-  if (compact) {
-    return (
-      <div className="day-stats-compact">
-        <div className="day-stats-compact__item">
-          <span className="day-stats-compact__value">
-            {formatNumber(stats.distance, "km", 1)}
-          </span>
-          <span className="day-stats-compact__label">Distance</span>
-        </div>
-        <div className="day-stats-compact__item">
-          <span className="day-stats-compact__value">
-            {formatNumber(stats.elevationGain, "m", 0)}
-          </span>
-          <span className="day-stats-compact__label">D+</span>
-        </div>
-        <div className="day-stats-compact__item">
-          <span className="day-stats-compact__value">
-            {formatNumber(stats.elevationLoss, "m", 0)}
-          </span>
-          <span className="day-stats-compact__label">D-</span>
-        </div>
-      </div>
-    );
-  }
-
+export function DayStats({ stats }: Props) {
   return (
     <div className="day-stats">
       <div className="day-stats__item">

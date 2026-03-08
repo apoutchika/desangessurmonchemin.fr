@@ -1,0 +1,232 @@
+/* ============================================================
+   Page d'attente — Des anges sur mon chemin
+   ============================================================ */
+
+:root {
+  /* Palette */
+  --sand: #f5f0e8;
+  --parch: #ede6d6;
+  --warm: #c8b89a;
+  --stone: #8a7968;
+  --earth: #5c4f3a;
+  --ink: #2b2318;
+  --forest: #5a7a5f;
+  --white: #fdfaf5;
+  --muted: #9e9080;
+  --line: rgba(92, 79, 58, 0.15);
+
+  /* Typographie */
+  --font-serif: "EB Garamond", "Georgia", serif;
+  --font-sans: "Jost", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--white);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+::selection {
+  background: var(--warm);
+  color: var(--ink);
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  width: 100%;
+}
+
+/* Book Cover */
+.book-cover {
+  flex-shrink: 0;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.book-cover img {
+  width: 280px;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.book-cover img:hover {
+  transform: translateY(-4px);
+}
+
+/* Text Content */
+.text-content {
+  text-align: center;
+  max-width: 600px;
+  animation: fadeIn 1s ease-out 0.2s both;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--stone);
+  margin-bottom: 2rem;
+}
+
+.description {
+  font-family: var(--font-serif);
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  line-height: 1.7;
+  color: var(--earth);
+  margin-bottom: 2.5rem;
+}
+
+/* Coming Soon Badge */
+.coming-soon {
+  margin-bottom: 2rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background: var(--forest);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 50px;
+  margin-bottom: 1rem;
+}
+
+.date {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--forest);
+  font-weight: 500;
+}
+
+/* Countdown */
+.countdown {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.countdown-value {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  font-weight: 600;
+  color: var(--forest);
+  line-height: 1;
+}
+
+.countdown-label {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 2rem 0;
+  animation: fadeIn 1.2s ease-out 0.4s both;
+}
+
+.footer p {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .content {
+    flex-direction: row;
+    align-items: center;
+    gap: 4rem;
+  }
+
+  .book-cover img {
+    width: 320px;
+  }
+
+  .text-content {
+    text-align: left;
+  }
+
+  .coming-soon {
+    text-align: left;
+  }
+
+  .countdown {
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 1024px) {
+  .book-cover img {
+    width: 360px;
+  }
+}

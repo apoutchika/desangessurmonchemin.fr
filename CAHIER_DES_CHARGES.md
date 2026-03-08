@@ -1,4 +1,4 @@
-# Cahier des charges — Sur le Chemin
+# Cahier des charges — Des anges sur mon chemin
 
 ## Site web pour publication d'un récit de pèlerinage
 

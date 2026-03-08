@@ -57,7 +57,7 @@
     max-height: calc(100vh - var(--nav-h) - 4rem);
     overflow-y: auto;
     overflow-x: hidden;
-    
+
     /* Scrollbar personnalisée */
     scrollbar-width: thin;
     scrollbar-color: var(--warm) transparent;
@@ -92,7 +92,7 @@
 /* ---- Stats mobiles uniquement (< 768px) ---- */
 .day-stats-mobile {
   display: block;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 }
 
 @media (min-width: 768px) {
@@ -106,7 +106,7 @@
   display: none;
 }
 
-@media (min-width: 768px) and (max-width: 1199px) {
+@media (max-width: 1199px) {
   .day-tablet-stats {
     display: block;
     margin-bottom: 2.5rem;
@@ -143,42 +143,6 @@
   margin-top: 0.5rem;
 }
 
-/* ---- Stats compactes (mobile) ---- */
-.day-stats-compact {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--sand);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  justify-content: space-around;
-}
-
-.day-stats-compact__item {
-  text-align: center;
-  flex: 1;
-}
-
-.day-stats-compact__value {
-  font-family: var(--font-serif);
-  font-size: 1.375rem;
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1;
-  display: block;
-  font-variant-numeric: lining-nums tabular-nums;
-  margin-bottom: 0.25rem;
-}
-
-.day-stats-compact__label {
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  display: block;
-  font-family: var(--font-sans);
-}
-
 /* ---- Optimisations mobile ---- */
 @media (max-width: 640px) {
   .day-layout {
@@ -213,7 +177,6 @@
   }
 }
 
-
 /* ============================================================
    SIDEBAR MENU — Responsive avec overlay
    ============================================================ */
@@ -230,14 +193,13 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: 
-    left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
 }
 
 /* Quand le menu est ouvert */
 .livre-sidebar__toggle--open {
-  left: 280px;
+  transform: translate(280px, -50%);
 }
 
 /* Masquer le bouton sur grand écran (≥ 1500px) */

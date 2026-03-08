@@ -249,7 +249,7 @@ export function DayMap({ day }: Props) {
   }, [day]);
 
   return (
-    <div style={{ marginBottom: "2.5rem" }}>
+    <>
       <div
         ref={mapRef}
         className="day-map-container"
@@ -275,6 +275,6 @@ export function DayMap({ day }: Props) {
       </div>
 
       {day.hasElevationProfile() && <DayElevation points={gpxPoints} />}
-    </div>
+    </>
   );
 }

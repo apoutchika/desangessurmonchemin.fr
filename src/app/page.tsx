@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getJourneyStats } from "@/data/journey";
 import { formatNumber } from "@/lib/formatNumber";
+import { BookCover } from "@/components/ui/BookCover";
 
 export default function HomePage() {
   const stats = getJourneyStats();
@@ -14,22 +15,40 @@ export default function HomePage() {
           <h1 className="home-hero__title">
             Des anges sur <em>mon chemin</em>
           </h1>
-          <p className="home-hero__subtitle">
-            Un printemps vers Santiago
-          </p>
-          <p className="home-hero__subtitle" style={{ fontSize: 'clamp(0.9375rem, 1.8vw, 1.125rem)', marginTop: '0.5rem' }}>
-            {stats.totalDays} jours de marche. {Math.round(stats.totalDistance)}{" "}
-            kilomètres. {formatNumber(stats.totalElevationGain, null, 0)} mètres
-            de dénivelé. Un récit sincère sur ce qu'on découvre quand on marche
-            vers l'essentiel.
-          </p>
-          <div className="home-ctas">
-            <Link href="/livre" className="btn btn-primary">
-              Lire le livre →
-            </Link>
-            <Link href="/telechargement" className="btn btn-outline">
-              Télécharger
-            </Link>
+          <p className="home-hero__subtitle">Un printemps vers Santiago</p>
+
+          {/* Layout 2 colonnes sur grand écran */}
+          <div className="home-hero__content">
+            <div className="home-hero__book">
+              <BookCover size="large" />
+            </div>
+
+            <div className="home-hero__text">
+              <p
+                style={{
+                  fontSize: "clamp(1rem, 2vw, 1.125rem)",
+                  color: "var(--stone)",
+                  lineHeight: 1.7,
+                  marginBottom: "2rem",
+                  textAlign: "center",
+                }}
+              >
+                De Lyon à Compostelle, 1 814 kilomètres seul mais jamais
+                vraiment.
+                <br />
+                Le récit d'une aventure humaine portée par les rencontres du
+                chemin.
+              </p>
+
+              <div className="home-ctas" style={{ justifyContent: "center" }}>
+                <Link href="/livre" className="btn btn-primary">
+                  Commencer la lecture →
+                </Link>
+                <Link href="/telechargement" className="btn btn-outline">
+                  Télécharger (ePub/PDF)
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -100,23 +119,23 @@ export default function HomePage() {
             <FeatureCard
               icon="📖"
               title="Livre interactif"
-              desc="Cartes interactives, galeries photos, profils altimétriques — vivez le voyage depuis chez vous."
+              desc="Cartes, photos, profils altimétriques — vivez le voyage depuis chez vous."
               href="/livre"
               cta="Commencer la lecture"
             />
             <FeatureCard
               icon="⬇️"
-              title="Téléchargement gratuit"
-              desc="Emportez le récit avec vous en ePub pour liseuse ou en PDF soigneusement mis en page."
+              title="Formats numériques"
+              desc="Emportez le récit avec vous en ePub ou PDF, pour lire hors ligne sur tous vos appareils."
               href="/telechargement"
               cta="Télécharger"
             />
             <FeatureCard
               icon="☕"
-              title="Soutenir l'auteur"
-              desc="Ce livre en ligne restera gratuit. Si le récit vous a touché, votre soutien est une belle façon de dire merci."
+              title="Prix libre"
+              desc="Ce récit est accessible à tous. Si vous le souhaitez, vous pouvez soutenir l'auteur selon vos moyens."
               href="/don"
-              cta="Faire un don"
+              cta="Soutenir le projet"
             />
           </div>
         </div>

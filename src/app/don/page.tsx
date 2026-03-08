@@ -1,16 +1,18 @@
 "use client";
 
-import { TokenBTC, TokenETH, TokenUSDC, TokenSOL } from "@web3icons/react";
-import { useState } from "react";
+import { TokenBTC, TokenETH, TokenSOL } from "@web3icons/react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { BookCover } from "@/components/ui/BookCover";
 
-const AMOUNTS = [5, 10, 15, 20, 30, 50];
+const AMOUNTS = [5, 10, 15, 20, 30, 50] as const;
 
 const CRYPTO_WALLETS = [
   {
     id: "btc",
     name: "Bitcoin",
     symbol: "BTC",
-    address: "bc1q42q8qutaehalx94gc5qw67plgvs2jzvd62qxhj",
+    address: "bc1qg5x9qrf0fcl6q6v3jy4tss3caj85uz8vyk4v4t",
     color: "#f7931a",
     network: "Bitcoin",
     Icon: TokenBTC,
@@ -24,6 +26,15 @@ const CRYPTO_WALLETS = [
     network: "Ethereum (Mainnet)",
     Icon: TokenETH,
   },
+  {
+    id: "sol",
+    name: "Solana",
+    symbol: "SOL / USDC",
+    address: "BvjFLWtiC6MHwz2ooPjdZtbXjQxFapF7sZHEFgjX3Nsf",
+    color: "#9945ff",
+    network: "Solana",
+    Icon: TokenSOL,
+  },
   /*
   {
     id: "usdc-polygon",
@@ -35,19 +46,10 @@ const CRYPTO_WALLETS = [
     tip: "Frais quasi nuls : privilégiez ce réseau !",
     Icon: TokenUSDC,
   },
-  {
-    id: "sol",
-    name: "Solana",
-    symbol: "SOL / USDC",
-    address: "BvjFLWtiC6MHwz2ooPjdZtbXjQxFapF7sZHEFgjX3Nsf",
-    color: "#9945ff",
-    network: "Solana",
-    Icon: TokenSOL,
-  },
   */
 ] as const;
 
-type Wallet = (typeof CRYPTO_WALLETS)[number];
+type Wallet = (typeof CRYPTO_WALLETS)[number] & { tip?: string };
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -137,7 +139,6 @@ function CryptoCard({ wallet }: { wallet: Wallet }) {
         background: "var(--sand)",
       }}
     >
-      {/* En-tête */}
       <div
         style={{
           display: "flex",
@@ -248,213 +249,378 @@ function CryptoCard({ wallet }: { wallet: Wallet }) {
 type Tab = "fiat" | "crypto";
 
 export default function DonPage() {
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState<Tab>("fiat");
-  const [selected, setSelected] = useState<number | null>(15);
-  const [custom, setCustom] = useState("");
 
-  const finalAmount = custom ? parseInt(custom, 10) : selected;
+  const [amount, setAmount] = useState<number | null>(15);
+  const [customAmount, setCustomAmount] = useState<string>("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Vérifier si on revient de Stripe
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      setShowSuccess(true);
+      // Nettoyer l'URL après 5 secondes
+      setTimeout(() => {
+        window.history.replaceState({}, "", "/don");
+      }, 5000);
+    }
+  }, [searchParams]);
+
+  const handlePayment = async () => {
+    const finalAmount = showCustomInput ? Number(customAmount) : amount;
+    if (!finalAmount || finalAmount <= 0) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: finalAmount }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Erreur lors de la création du paiement");
+      }
+
+      // Rediriger vers Stripe
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="simple-page">
-      <div className="simple-page__inner" style={{ maxWidth: "520px" }}>
-        <h1 className="simple-page__title">Soutenir l'auteur</h1>
-        <p className="simple-page__subtitle">
-          Ce livre en ligne restera toujours gratuit. Si le récit vous a touché,
-          votre soutien est une belle façon de dire merci pour le travail accompli.
-        </p>
-
-        {/* Tabs */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "0.5rem",
-            marginBottom: "2rem",
-            background: "var(--sand)",
-            padding: "0.3rem",
-            borderRadius: "10px",
-            border: "1px solid var(--line)",
-          }}
-        >
-          {(["fiat", "crypto"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              style={{
-                padding: "0.625rem",
-                borderRadius: "7px",
-                border: "none",
-                cursor: "pointer",
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.875rem",
-                fontWeight: tab === t ? "500" : "400",
-                background: tab === t ? "var(--white)" : "transparent",
-                color: tab === t ? "var(--ink)" : "var(--muted)",
-                boxShadow: tab === t ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-                transition: "all 0.15s",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {t === "fiat" ? (
-                "💳 Carte / virement"
-              ) : (
-                <>
-                  <TokenBTC variant="branded" /> Cryptomonnaie
-                </>
-              )}
-            </button>
-          ))}
+      <div className="don-page__container">
+        <div className="don-page__book">
+          <BookCover size="medium" />
         </div>
 
-        {/* Onglet Fiat */}
-        {tab === "fiat" && (
-          <>
-            <FieldLabel>Choisissez un montant</FieldLabel>
-            <div className="don-amounts" style={{ marginBottom: "1.25rem" }}>
-              {AMOUNTS.map((a) => (
-                <button
-                  key={a}
-                  className={`don-amount-btn${selected === a && !custom ? " don-amount-btn--selected" : ""}`}
-                  onClick={() => {
-                    setSelected(a);
-                    setCustom("");
-                  }}
-                >
-                  {a} €
-                </button>
-              ))}
-            </div>
-
-            <div style={{ marginBottom: "1.5rem" }}>
-              <FieldLabel>Autre montant</FieldLabel>
-              <div style={{ position: "relative" }}>
-                <input
-                  id="custom"
-                  type="number"
-                  min="1"
-                  value={custom}
-                  onChange={(e) => {
-                    setCustom(e.target.value);
-                    setSelected(null);
-                  }}
-                  placeholder="Votre montant"
-                  style={{
-                    width: "100%",
-                    padding: "0.875rem 2.5rem 0.875rem 1rem",
-                    border: "1.5px solid var(--line)",
-                    borderRadius: "8px",
-                    fontSize: "1rem",
-                    fontFamily: "var(--font-serif)",
-                    background: "var(--sand)",
-                    color: "var(--ink)",
-                    outline: "none",
-                  }}
-                />
-                <span
-                  style={{
-                    position: "absolute",
-                    right: "1rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "var(--muted)",
-                    fontFamily: "var(--font-sans)",
-                  }}
-                >
-                  €
-                </span>
-              </div>
-            </div>
-
-            <button
-              className="btn btn-primary"
-              style={{
-                width: "100%",
-                justifyContent: "center",
-                fontSize: "1rem",
-                padding: "1rem",
-              }}
-              disabled={!finalAmount || finalAmount <= 0}
-            >
-              Donner {finalAmount ? `${finalAmount} €` : ""} →
-            </button>
-
-            <p
-              style={{
-                marginTop: "1.25rem",
-                fontSize: "0.75rem",
-                color: "var(--muted)",
-                lineHeight: 1.6,
-              }}
-            >
-              Paiement sécurisé via Stripe. Aucun engagement, aucun abonnement.
-              Vous recevrez un reçu par email.
-            </p>
-          </>
-        )}
-
-        {/* Onglet Crypto */}
-        {tab === "crypto" && (
-          <>
-            <p
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontSize: "1rem",
-                color: "var(--stone)",
-                lineHeight: 1.7,
-                marginBottom: "1.75rem",
-              }}
-            >
-              Envoyez le montant de votre choix directement à l'une des adresses
-              ci-dessous. Chaque transaction, aussi petite soit-elle, est reçue
-              avec gratitude.
-            </p>
-
+        <div className="don-page__content">
+          {showSuccess && (
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.75rem",
+                background: "rgba(90, 122, 95, 0.1)",
+                border: "2px solid var(--forest)",
+                borderRadius: "10px",
+                padding: "1.5rem",
+                marginBottom: "2rem",
+                textAlign: "center",
               }}
             >
-              {CRYPTO_WALLETS.map((w) => (
-                <CryptoCard key={w.id} wallet={w} />
-              ))}
+              <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>
+                🙏
+              </div>
+              <h2
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: "1.5rem",
+                  color: "var(--forest)",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                Merci infiniment !
+              </h2>
+              <p
+                style={{
+                  color: "var(--stone)",
+                  lineHeight: 1.6,
+                  marginBottom: "1rem",
+                }}
+              >
+                Votre soutien est précieux et permet de continuer à créer et
+                partager.
+              </p>
+              <p style={{ color: "var(--stone)", lineHeight: 1.6, margin: 0 }}>
+                Si ce récit vous a touché, n'hésitez pas à{" "}
+                <a
+                  href="/contact"
+                  className="link-underline"
+                  style={{ color: "var(--forest)", fontWeight: 500 }}
+                >
+                  partager vos impressions
+                </a>
+                . Chaque message est lu avec attention et émotion.
+              </p>
             </div>
+          )}
 
-            <Divider label="Besoin d'aide ?" />
+          <h1 className="simple-page__title" style={{ textAlign: "left" }}>
+            Soutenir ce projet
+          </h1>
+          <p className="simple-page__subtitle" style={{ textAlign: "left" }}>
+            Ce récit est proposé en prix libre. Chacun peut le lire selon ses
+            moyens, et ceux qui le souhaitent peuvent contribuer à sa valeur.
+          </p>
 
-            <p
-              style={{
-                fontSize: "0.8125rem",
-                color: "var(--muted)",
-                lineHeight: 1.7,
-              }}
-            >
-              Si c'est votre premier envoi en cryptomonnaie, des services comme{" "}
-              <a
-                href="https://www.coinbase.com"
-                target="_blank"
-                rel="noopener"
-                className="link-underline"
-              >
-                Coinbase
-              </a>{" "}
-              ou{" "}
-              <a
-                href="https://www.kraken.com"
-                target="_blank"
-                rel="noopener"
-                className="link-underline"
-              >
-                Kraken
-              </a>{" "}
-              permettent d'acheter et envoyer des cryptos facilement. Vérifiez
-              toujours l'adresse avant d'envoyer.
+          <div
+            style={{
+              background: "var(--parch)",
+              border: "1px solid var(--line)",
+              borderRadius: "10px",
+              padding: "1.5rem",
+              marginBottom: "2rem",
+              fontSize: "0.9375rem",
+              color: "var(--earth)",
+              lineHeight: 1.7,
+              fontFamily: "var(--font-serif)",
+            }}
+          >
+            <p style={{ marginBottom: "1rem" }}>
+              Écrire ce livre a demandé des centaines d'heures de travail :
+              marcher, photographier, écrire, relire, coder ce site. Si ce récit
+              vous a touché, accompagné ou inspiré, votre soutien permet de
+              continuer à créer et partager.
             </p>
-          </>
-        )}
+            <p style={{ margin: 0 }}>
+              Chaque contribution, quelle que soit sa forme, est reçue avec
+              gratitude.
+            </p>
+          </div>
+
+          {/* Tabs */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "0.5rem",
+              marginBottom: "2rem",
+              background: "var(--sand)",
+              padding: "0.3rem",
+              borderRadius: "10px",
+              border: "1px solid var(--line)",
+            }}
+          >
+            {(["fiat", "crypto"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                style={{
+                  padding: "0.625rem",
+                  borderRadius: "7px",
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "var(--font-sans)",
+                  fontSize: "0.875rem",
+                  fontWeight: tab === t ? "500" : "400",
+                  background: tab === t ? "var(--white)" : "transparent",
+                  color: tab === t ? "var(--ink)" : "var(--muted)",
+                  boxShadow: tab === t ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                  transition: "all 0.15s",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {t === "fiat" ? (
+                  "💳 Carte / virement"
+                ) : (
+                  <>
+                    <TokenBTC variant="branded" /> Cryptomonnaie
+                  </>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Onglet Fiat */}
+          {tab === "fiat" && (
+            <div style={{ maxWidth: "520px", margin: "0 auto" }}>
+              <FieldLabel>Choisissez un montant</FieldLabel>
+              <div className="don-amounts" style={{ marginBottom: "1.25rem" }}>
+                {AMOUNTS.map((a) => (
+                  <button
+                    key={a}
+                    className={`don-amount-btn${amount === a && !showCustomInput ? " don-amount-btn--selected" : ""}`}
+                    onClick={() => {
+                      setAmount(a);
+                      setShowCustomInput(false);
+                    }}
+                  >
+                    {a} €
+                  </button>
+                ))}
+                <button
+                  className={`don-amount-btn${showCustomInput ? " don-amount-btn--selected" : ""}`}
+                  onClick={() => {
+                    setShowCustomInput(true);
+                    setAmount(null);
+                  }}
+                >
+                  Autre montant
+                </button>
+              </div>
+
+              {showCustomInput && (
+                <div
+                  style={{
+                    marginBottom: "1.5rem",
+                    animation: "fadeIn 0.2s ease-in",
+                  }}
+                >
+                  <FieldLabel>Votre montant</FieldLabel>
+                  <div style={{ position: "relative" }}>
+                    <input
+                      id="custom"
+                      type="number"
+                      min="1"
+                      value={customAmount}
+                      onChange={(e) => setCustomAmount(e.target.value)}
+                      placeholder="Entrez un montant"
+                      autoFocus
+                      style={{
+                        width: "100%",
+                        padding: "0.875rem 2.5rem 0.875rem 1rem",
+                        border: "1.5px solid var(--forest)",
+                        borderRadius: "8px",
+                        fontSize: "1rem",
+                        fontFamily: "var(--font-serif)",
+                        background: "var(--white)",
+                        color: "var(--ink)",
+                        outline: "none",
+                        transition: "all 0.2s",
+                      }}
+                    />
+                    <span
+                      style={{
+                        position: "absolute",
+                        right: "1rem",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        color: "var(--muted)",
+                        fontFamily: "var(--font-sans)",
+                        fontSize: "0.875rem",
+                      }}
+                    >
+                      €
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <button
+                className="btn btn-primary"
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  fontSize: "1rem",
+                  padding: "1rem",
+                }}
+                disabled={
+                  loading ||
+                  (showCustomInput
+                    ? !customAmount || Number(customAmount) <= 0
+                    : !amount || amount <= 0)
+                }
+                onClick={handlePayment}
+              >
+                {loading
+                  ? "Redirection..."
+                  : `Donner ${showCustomInput ? (customAmount ? `${customAmount} €` : "") : amount ? `${amount} €` : ""} →`}
+              </button>
+
+              {error && (
+                <p
+                  style={{
+                    marginTop: "1rem",
+                    fontSize: "0.875rem",
+                    color: "var(--rust)",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  ⚠️ {error}
+                </p>
+              )}
+
+              <p
+                style={{
+                  marginTop: "1.25rem",
+                  fontSize: "0.75rem",
+                  color: "var(--muted)",
+                  lineHeight: 1.6,
+                }}
+              >
+                Paiement sécurisé via Stripe. Aucun engagement, aucun
+                abonnement. Vous recevrez un reçu par email.
+              </p>
+            </div>
+          )}
+
+          {/* Onglet Crypto */}
+          {tab === "crypto" && (
+            <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: "1rem",
+                  color: "var(--stone)",
+                  lineHeight: 1.7,
+                  marginBottom: "1.75rem",
+                }}
+              >
+                Envoyez le montant de votre choix directement à l'une des
+                adresses ci-dessous. Chaque transaction, aussi petite soit-elle,
+                est reçue avec gratitude.
+              </p>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
+                {CRYPTO_WALLETS.map((w) => (
+                  <CryptoCard key={w.id} wallet={w} />
+                ))}
+              </div>
+
+              <Divider label="Besoin d'aide ?" />
+
+              <p
+                style={{
+                  fontSize: "0.8125rem",
+                  color: "var(--muted)",
+                  lineHeight: 1.7,
+                }}
+              >
+                Si c'est votre premier envoi en cryptomonnaie, des services
+                comme{" "}
+                <a
+                  href="https://www.coinbase.com"
+                  target="_blank"
+                  rel="noopener"
+                  className="link-underline"
+                >
+                  Coinbase
+                </a>{" "}
+                ou{" "}
+                <a
+                  href="https://www.kraken.com"
+                  target="_blank"
+                  rel="noopener"
+                  className="link-underline"
+                >
+                  Kraken
+                </a>{" "}
+                permettent d'acheter et envoyer des cryptos facilement. Vérifiez
+                toujours l'adresse avant d'envoyer.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

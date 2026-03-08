@@ -3,7 +3,6 @@
 import type { Day } from "@/domain";
 import { DayStats } from "./DayStats";
 import { DayMap } from "./DayMap";
-import { DayElevation } from "./DayElevation";
 
 interface Props {
   day: Day;
@@ -14,7 +13,7 @@ interface Props {
  * - Stats (distance, dénivelé +/-)
  * - Carte interactive
  * - Profil altimétrique
- * 
+ *
  * Ce composant est toujours affiché ensemble, que ce soit
  * dans la sidebar desktop ou au-dessus du contenu sur mobile/tablette.
  */
@@ -36,13 +35,6 @@ export function DayStatsBlock({ day }: Props) {
       {day.hasMap() && (
         <div className="day-stats-block__section">
           <DayMap day={day} />
-        </div>
-      )}
-
-      {/* Profil altimétrique */}
-      {day.gpx && day.gpx.length > 0 && (
-        <div className="day-stats-block__section">
-          <DayElevation points={day.gpx} />
         </div>
       )}
     </div>

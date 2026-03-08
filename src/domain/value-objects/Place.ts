@@ -7,7 +7,7 @@ export class Place {
     public readonly city: string,
     public readonly name: string,
     public readonly link?: string,
-    public readonly stamp?: string // Chemin vers l'image du tampon de crédential
+    public readonly stamp?: string, // Chemin vers l'image du tampon de crédential
   ) {}
 
   static create(
@@ -15,7 +15,7 @@ export class Place {
     name: string,
     latlng?: LatLng | null,
     link?: string,
-    stamp?: string
+    stamp?: string,
   ): Place {
     if (!city.trim()) {
       throw new Error("City cannot be empty");
@@ -38,7 +38,7 @@ export class Place {
       data.name,
       data.latlng ? LatLng.fromPlain(data.latlng) : null,
       data.link,
-      data.stamp
+      data.stamp,
     );
   }
 

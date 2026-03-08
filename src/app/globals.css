@@ -192,7 +192,7 @@ a:hover {
   background: var(--white);
   position: sticky;
   top: 0;
-  z-index: 200;
+  z-index: 300;
   backdrop-filter: blur(8px);
 }
 
@@ -233,7 +233,7 @@ a:hover {
 }
 
 .site-nav__links a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -383,7 +383,7 @@ a:hover {
   border: 1px solid var(--line);
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 2.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .day-stats__item {
@@ -702,6 +702,30 @@ a:hover {
   text-align: center;
   padding: 2rem;
   animation: heroReveal 1.2s var(--ease) both;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.home-hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  margin-top: 3rem;
+}
+
+@media (min-width: 990px) {
+  .home-hero__content {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .home-hero__text {
+    max-width: 550px;
+    justify-self: center;
+  }
 }
 
 .home-hero__kicker {
@@ -854,6 +878,39 @@ a:hover {
   width: 100%;
 }
 
+/* Layout 2 colonnes pour la page don */
+.don-page__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  max-width: 1100px;
+  width: 100%;
+}
+
+.don-page__book {
+  flex-shrink: 0;
+}
+
+.don-page__content {
+  width: 100%;
+  max-width: 600px;
+}
+
+@media (min-width: 900px) {
+  .don-page__container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .don-page__book {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+  }
+}
+
 .simple-page__title {
   font-family: var(--font-serif);
   font-size: clamp(2rem, 4vw, 3rem);
@@ -981,13 +1038,13 @@ a:hover {
 }
 
 .nav-mobile-toggle__bar::before {
-  content: '';
+  content: "";
   top: -9px;
   left: 0;
 }
 
 .nav-mobile-toggle__bar::after {
-  content: '';
+  content: "";
   top: 9px;
   left: 0;
 }
@@ -1027,18 +1084,18 @@ a:hover {
     padding: 1.5rem 2rem 2rem;
     border-bottom: 1px solid var(--line);
     gap: 1.25rem;
-    z-index: 150;
+    z-index: 300;
     align-items: flex-start;
     animation: slideDown 0.3s var(--ease);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     min-height: 350px; /* Assure un fond suffisant */
   }
-  
+
   .site-nav__links--open li {
     width: 100%;
     height: auto;
   }
-  
+
   .site-nav__links--open a {
     width: 100%;
     height: auto;
@@ -1168,7 +1225,7 @@ a:hover {
 }
 
 .footer-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -1204,6 +1261,14 @@ a:hover {
   outline: none !important;
 }
 
+/* ============================================================
+   BOOK COVER
+   ============================================================ */
+
+.book-cover {
+  display: inline-block;
+}
+
 /* ---- reCAPTCHA badge ---- */
 .grecaptcha-badge {
   bottom: 80px !important;
@@ -1221,12 +1286,13 @@ a:hover {
    ============================================================ */
 
 .day-like-wrapper {
+  height: 0;
   position: sticky;
-  top: calc(var(--nav-h) + 1rem);
+  top: calc(var(--nav-h) + 5.5rem);
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem; /* Réduit de 1.5rem à 1rem */
-  margin-bottom: 1.5rem;
+  align-items: flex-end;
+  margin-top: 0; /* Réduit de 1.5rem à 1rem */
   z-index: 30;
 }
 
@@ -1234,6 +1300,8 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  position: relative;
+  top: -10px;
   padding: 0.75rem 1.25rem;
   border-radius: 100px;
   background: var(--white);
@@ -1307,7 +1375,8 @@ a:hover {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -1315,16 +1384,27 @@ a:hover {
   }
 }
 
+@media (max-width: 1199px) {
+  .day-like-wrapper {
+    top: calc(var(--nav-h) + 2.5rem);
+    align-items: flex-start;
+  }
+  .day-like {
+    top: 0;
+  }
+}
+
 @media (max-width: 640px) {
   .day-like-wrapper {
-    top: calc(var(--nav-h) + 0.5rem);
+    top: calc(var(--nav-h) + 2.5rem);
   }
-  
+
   .day-like {
     padding: 0.625rem 1rem;
     font-size: 0.8125rem;
+    top: 0;
   }
-  
+
   .day-like svg {
     width: 18px;
     height: 18px;
@@ -1403,11 +1483,4 @@ a:hover {
 
 .stats-toggle__text {
   letter-spacing: 0.03em;
-}
-
-/* Masquer le toggle sur mobile (< 768px) */
-@media (max-width: 767px) {
-  .stats-toggle {
-    display: none;
-  }
 }

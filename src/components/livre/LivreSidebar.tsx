@@ -69,15 +69,11 @@ export function LivreSidebar({ isOpen, onToggle }: Props) {
                 <feMergeNode in="SourceGraphic"/>
               </feMerge>
             </filter>
-            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="50%">
-              <stop offset="0%" stopColor="#c8b89a" />
-              <stop offset="100%" stopColor="#b5603a" />
-            </linearGradient>
           </defs>
           <g filter="url(#shadow)">
             <path 
               d="M 0,0 C 0,45 55,45 55,90 C 55,135 0,135 0,180 L 0,0 Z" 
-              fill="url(#waveGradient)" 
+              fill="#5a7a5f"
             />
           </g>
           {/* Flèche stylée qui change de sens */}
@@ -88,19 +84,11 @@ export function LivreSidebar({ isOpen, onToggle }: Props) {
               transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
-            {/* Cercle d'arrière-plan discret */}
-            <circle
-              cx="30"
-              cy="90"
-              r="14"
-              fill="#2b2318"
-              opacity="0.1"
-            />
-            {/* Flèche pointant vers la droite (→) quand fermé */}
+            {/* Flèche simple et élégante */}
             <path
               d="M 36 90 L 24 84 L 24 96 Z"
-              fill="#2b2318"
-              opacity="0.6"
+              fill="#f5f0e8"
+              opacity="0.9"
             />
           </g>
         </svg>
