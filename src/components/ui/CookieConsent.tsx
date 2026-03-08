@@ -124,6 +124,7 @@ export function CookieConsent() {
 function loadGoogleAnalytics() {
   // Remplace par ton ID Google Analytics
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+  console.log({ GA_ID });
 
   if (!GA_ID) return;
 
