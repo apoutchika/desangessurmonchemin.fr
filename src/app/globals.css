@@ -394,7 +394,7 @@ a:hover {
 
 .day-stats__value {
   font-family: var(--font-serif);
-  font-size: 1.875rem;
+  font-size: 1.625rem;
   font-weight: 600;
   color: var(--ink);
   line-height: 1;
@@ -1066,7 +1066,7 @@ a:hover {
   background: var(--rust);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 999px) {
   .nav-mobile-toggle {
     display: block;
   }
