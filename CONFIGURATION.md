@@ -8,68 +8,162 @@ Copier `.env.example` vers `.env.local` et remplir les valeurs :
 cp .env.example .env.local
 ```
 
-### 1. Mailjet (envoi d'emails)
-
-**Pourquoi ?** Pour recevoir les messages du formulaire de contact.
-
-1. Créer un compte sur [mailjet.com](https://www.mailjet.com)
+### Mailjet (emails de contact)
+1. Créer un compte sur https://www.mailjet.com
 2. Aller dans Account Settings > API Keys
 3. Copier API Key et Secret Key
-4. Ajouter dans `.env.local` :
-   ```
-   MAILJET_API_KEY=your_api_key
-   MAILJET_SECRET_KEY=your_secret_key
-   MAILJET_SENDER_EMAIL=contact@votredomaine.fr
-   CONTACT_EMAIL=votre-email@exemple.fr
-   ```
 
-**Gratuit** : Mailjet offre 200 emails/jour gratuitement, parfait pour un site personnel.
+### Google reCAPTCHA v2
+1. Créer sur https://www.google.com/recaptcha/admin
+2. Choisir reCAPTCHA v2 "Je ne suis pas un robot"
+3. Ajouter votre domaine
+4. Copier Site Key (publique) et Secret Key
 
-### 2. Google reCAPTCHA v2
+### IP Salt
+Générer un salt aléatoire pour l'anonymisation des IPs :
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
 
-**Pourquoi ?** Pour éviter le spam sur le formulaire de contact.
+### Stripe (dons)
+1. Créer un compte sur https://stripe.com
+2. Aller dans Developers > API keys
+3. Copier Publishable key et Secret key
+4. En mode test, les clés commencent par `pk_test_` et `sk_test_`
 
-1. Aller sur [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
-2. Créer un nouveau site avec reCAPTCHA v2 "Je ne suis pas un robot"
-3. Ajouter votre domaine (localhost pour dev)
-4. Copier les clés dans `.env.local` :
-   ```
-   NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LeXXXXXX (clé publique)
-   RECAPTCHA_SECRET_KEY=6LeXXXXXX (clé secrète)
-   ```
+### Google Analytics
+1. Créer une propriété GA4 sur https://analytics.google.com
+2. Récupérer l'ID de mesure (format `G-XXXXXXXXXX`)
+3. Ajouter dans `.env.local` : `NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX`
 
-## Formulaire de contact
+## Migration de la base de données
 
-Le formulaire utilise :
-- **react-hook-form** : Gestion du formulaire
-- **yup** : Validation des champs
-- **reCAPTCHA** : Protection anti-spam
-- **Mailjet** : Envoi d'emails via nodemailer
+Si vous avez déjà des données dans l'ancienne structure :
 
-### Messages de validation
+```bash
+node scripts/migrate-db.js
+```
 
-Les messages sont définis dans `src/lib/contactSchema.ts` :
-- Nom : minimum 2 caractères
-- Email : format valide
-- Message : 10-2000 caractères
-- reCAPTCHA : obligatoire
+Ou pour repartir de zéro :
+```bash
+rm data/stats.db
+# La base sera recréée automatiquement au prochain démarrage
+```
 
-### Personnaliser les messages
+## Déploiement
 
-Éditer `src/lib/contactSchema.ts` pour changer les messages d'erreur.
+### Vercel (recommandé)
 
-## Page de don
+1. Connecter le repo GitHub à Vercel
+2. Ajouter les variables d'environnement dans Settings > Environment Variables
+3. Déployer
 
-La page `/don` affiche :
-- Onglet Fiat : formulaire Stripe (à configurer)
-- Onglet Crypto : adresses de wallets
+### Variables d'environnement sur Vercel
 
-**Note** : Le livre en ligne restera toujours gratuit. Un livre papier pourrait sortir un jour (payant).
+Toutes les variables de `.env.local` doivent être ajoutées :
+- `MAILJET_API_KEY`
+- `MAILJET_SECRET_KEY`
+- `MAILJET_SENDER_EMAIL`
+- `CONTACT_EMAIL`
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`
+- `RECAPTCHA_SECRET_KEY`
+- `IP_SALT`
+- `STRIPE_SECRET_KEY`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_GA_ID`
 
-Pour configurer Stripe, voir la documentation officielle.
+⚠️ Les variables commençant par `NEXT_PUBLIC_` sont exposées côté client.
 
-## CTA fin de livre
+## Fichiers à ajouter
 
-Un call-to-action sympa s'affiche automatiquement à la fin de la postface pour encourager les dons sans forcer.
+### Téléchargements
 
-Personnaliser dans `src/components/livre/EndOfBookCTA.tsx`.
+Placer les fichiers dans `public/downloads/` :
+- `pelerinage.epub`
+- `pelerinage.pdf`
+
+Ces fichiers seront servis via l'API `/api/download-file`.
+
+## RGPD et cookies
+
+### Bannière de consentement
+
+La bannière s'affiche automatiquement à la première visite. Le choix est stocké dans `localStorage`.
+
+### Google Analytics
+
+GA n'est chargé que si l'utilisateur accepte les cookies. L'anonymisation des IPs est activée par défaut.
+
+### Pages légales
+
+- `/mentions-legales` : informations légales
+- `/confidentialite` : politique RGPD
+
+Ces pages sont accessibles depuis le footer et la bannière de cookies.
+
+## Développement
+
+```bash
+# Installer les dépendances
+npm install
+
+# Lancer en dev
+npm run dev
+
+# Build
+npm run build
+
+# Lancer en production
+npm start
+```
+
+## Tests
+
+```bash
+# Tester le formulaire de contact
+# Vérifier que l'email arrive bien
+
+# Tester les téléchargements
+# Vérifier que le compteur s'incrémente
+
+# Tester les likes
+# Vérifier qu'on ne peut liker qu'une fois
+
+# Tester la bannière de cookies
+# Vérifier que GA ne charge pas si refusé
+```
+
+## Stripe en mode test
+
+Pour tester les paiements sans argent réel :
+
+Cartes de test :
+- Succès : `4242 4242 4242 4242`
+- Échec : `4000 0000 0000 0002`
+- 3D Secure : `4000 0027 6000 3184`
+
+Date d'expiration : n'importe quelle date future
+CVC : n'importe quel 3 chiffres
+
+## Troubleshooting
+
+### Les téléchargements ne comptent pas
+- Vérifier que `IP_SALT` est défini
+- Vérifier les logs de l'API `/api/download`
+
+### Les emails ne partent pas
+- Vérifier les credentials Mailjet
+- Vérifier que `MAILJET_SENDER_EMAIL` est vérifié dans Mailjet
+
+### Google Analytics ne fonctionne pas
+- Vérifier que `NEXT_PUBLIC_GA_ID` est défini
+- Vérifier que les cookies sont acceptés
+- Ouvrir la console et chercher `gtag`
+
+### Erreur de base de données
+- Supprimer `data/stats.db` et relancer
+- Vérifier les permissions du dossier `data/`
+
+## Support
+
+Pour toute question, utiliser le formulaire de contact du site.

@@ -20,7 +20,7 @@ export async function POST(request: Request) {
                'unknown';
 
     // Toggle le like
-    const result = toggleLike(dayId, ip);
+    const result = toggleLike(dayId, ip, headersList.get('user-agent') || undefined);
 
     return NextResponse.json(result);
   } catch (error) {

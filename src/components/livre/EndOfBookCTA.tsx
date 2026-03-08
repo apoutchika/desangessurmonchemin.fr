@@ -26,7 +26,7 @@ export function EndOfBookCTA() {
           lineHeight: 1.3,
         }}
       >
-        Merci d'avoir marché avec moi
+        Vous avez terminé le livre ?
       </h3>
       
       <p
@@ -39,8 +39,9 @@ export function EndOfBookCTA() {
           margin: '0 auto 1.5rem',
         }}
       >
-        Si ce récit vous a touché, un petit café virtuel est toujours apprécié.
-        C'est une façon de dire merci pour le travail accompli.
+        Si ce récit vous a touché, un petit soutien est toujours apprécié.
+        C'est une façon de dire merci pour le travail accompli et de permettre 
+        de futurs projets.
       </p>
 
       <Link
@@ -48,7 +49,7 @@ export function EndOfBookCTA() {
         className="btn btn-primary"
         style={{ display: 'inline-flex' }}
       >
-        Offrir un café
+        Soutenir ce projet
       </Link>
     </div>
   );

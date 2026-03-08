@@ -15,6 +15,7 @@ export default function TelechargementPage() {
 
   const handleDownload = async (format: 'epub' | 'pdf') => {
     try {
+      // Incrémenter le compteur
       const res = await fetch('/api/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -23,10 +24,19 @@ export default function TelechargementPage() {
       
       const data = await res.json();
       if (data.stats) {
-        setStats(data.stats); // Mettre à jour les stats immédiatement
+        setStats(data.stats);
       }
+
+      // Tracker dans GA
+      if (typeof window !== 'undefined') {
+        const { trackDownload } = await import('@/lib/analytics');
+        trackDownload(format);
+      }
+
+      // Télécharger le fichier via l'API
+      window.location.href = `/api/download-file?format=${format}`;
     } catch (error) {
-      console.error('Erreur compteur:', error);
+      console.error('Erreur téléchargement:', error);
     }
   };
 
@@ -35,7 +45,7 @@ export default function TelechargementPage() {
       <div className="simple-page__inner">
         <h1 className="simple-page__title">Téléchargement</h1>
         <p className="simple-page__subtitle">
-          Le livre est entièrement gratuit. Choisissez le format qui convient à votre usage.
+          Téléchargement gratuit, contribution libre.<br /> Choisissez le format qui convient à votre usage.
         </p>
 
         {stats && (
@@ -59,11 +69,10 @@ export default function TelechargementPage() {
         )}
 
         <div className="download-options">
-          <a
-            href="/downloads/pelerinage.epub"
-            download
+          <button
             onClick={() => handleDownload('epub')}
             className="download-card"
+            style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, width: '100%' }}
           >
             <div className="download-card__info">
               <div className="download-card__format">ePub</div>
@@ -77,13 +86,12 @@ export default function TelechargementPage() {
             <span className="btn btn-outline" style={{ pointerEvents: 'none' }}>
               ↓ Télécharger
             </span>
-          </a>
+          </button>
 
-          <a
-            href="/downloads/pelerinage.pdf"
-            download
+          <button
             onClick={() => handleDownload('pdf')}
             className="download-card"
+            style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, width: '100%' }}
           >
             <div className="download-card__info">
               <div className="download-card__format">PDF</div>
@@ -97,12 +105,12 @@ export default function TelechargementPage() {
             <span className="btn btn-outline" style={{ pointerEvents: 'none' }}>
               ↓ Télécharger
             </span>
-          </a>
+          </button>
         </div>
 
         <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', lineHeight: 1.6 }}>
           Ces fichiers sont librement redistribuables dans un cadre non commercial.
-          Si ce livre vous a touché, pensez à{' '}
+          Si ce livre vous a touché après l'avoir lu, pensez à{' '}
           <Link href="/don" className="link-underline">soutenir l'auteur</Link>.
         </p>
       </div>

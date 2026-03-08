@@ -74,6 +74,12 @@ export function DayLike({ dayId }: Props) {
       setLiked(data.liked);
       setCount(data.count);
       
+      // Tracker dans GA
+      if (typeof window !== 'undefined') {
+        const { trackLike } = await import('@/lib/analytics');
+        trackLike(dayId, data.liked ? 'add' : 'remove');
+      }
+      
       // Créer les particules après avoir reçu la réponse
       createParticles(data.liked);
     } catch (error) {

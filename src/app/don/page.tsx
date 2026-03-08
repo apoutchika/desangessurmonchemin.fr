@@ -264,6 +264,17 @@ export default function DonPage() {
   useEffect(() => {
     if (searchParams.get("success") === "true") {
       setShowSuccess(true);
+      
+      // Tracker le don réussi
+      if (typeof window !== 'undefined') {
+        const amount = searchParams.get("amount");
+        if (amount) {
+          import('@/lib/analytics').then(({ trackDonationSuccess }) => {
+            trackDonationSuccess(Number(amount));
+          });
+        }
+      }
+      
       // Nettoyer l'URL après 5 secondes
       setTimeout(() => {
         window.history.replaceState({}, "", "/don");
@@ -277,6 +288,12 @@ export default function DonPage() {
 
     setLoading(true);
     setError(null);
+
+    // Tracker l'intention de don
+    if (typeof window !== 'undefined') {
+      const { trackDonation } = await import('@/lib/analytics');
+      trackDonation(finalAmount);
+    }
 
     try {
       const response = await fetch("/api/create-checkout", {
@@ -380,9 +397,9 @@ export default function DonPage() {
           >
             <p style={{ marginBottom: "1rem" }}>
               Écrire ce livre a demandé des centaines d'heures de travail :
-              marcher, photographier, écrire, relire, coder ce site. Si ce récit
-              vous a touché, accompagné ou inspiré, votre soutien permet de
-              continuer à créer et partager.
+              marcher, photographier, écrire, relire, coder ce site. Si vous avez 
+              terminé la lecture et que ce récit vous a touché, accompagné ou inspiré, 
+              votre soutien permet de continuer à créer et partager.
             </p>
             <p style={{ margin: 0 }}>
               Chaque contribution, quelle que soit sa forme, est reçue avec

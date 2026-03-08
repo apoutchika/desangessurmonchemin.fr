@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest",
+    "check-config": "node scripts/check-config.js",
+    "migrate-db": "node scripts/migrate-db.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

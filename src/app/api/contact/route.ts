@@ -14,7 +14,7 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `secret=${secret}&response=${token}`,
-      }
+      },
     );
 
     const data = await response.json();
@@ -38,15 +38,15 @@ export async function POST(request: Request) {
     if (!isHuman) {
       return NextResponse.json(
         { error: "Échec de la vérification reCAPTCHA" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Configuration Mailjet via nodemailer
     const transporter = nodemailer.createTransport({
       host: "in-v3.mailjet.com",
-      port: 587,
-      secure: false, // true pour 465, false pour autres ports
+      port: 465,
+      secure: true, // true pour 465, false pour autres ports
       auth: {
         user: process.env.MAILJET_API_KEY,
         pass: process.env.MAILJET_SECRET_KEY,
@@ -55,14 +55,15 @@ export async function POST(request: Request) {
 
     // Envoyer l'email
     await transporter.sendMail({
-      from: `"Contact Site" <${process.env.MAILJET_SENDER_EMAIL}>`,
+      from: `"Des anges sur mon chemin" <noreply@desangessurmonchemin.fr>`,
       to: process.env.CONTACT_EMAIL,
       replyTo: validatedData.email,
-      subject: `Nouveau message de ${validatedData.name}`,
+      subject: validatedData.subject,
       html: `
         <h2>Nouveau message de contact</h2>
         <p><strong>Nom :</strong> ${validatedData.name}</p>
         <p><strong>Email :</strong> ${validatedData.email}</p>
+        <p><strong>Sujet :</strong> ${validatedData.subject}</p>
         <hr />
         <p>${validatedData.message.replace(/\n/g, "<br>")}</p>
       `,
@@ -74,14 +75,14 @@ export async function POST(request: Request) {
     if (error.name === "ValidationError") {
       return NextResponse.json(
         { error: error.errors[0] || "Données invalides" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Erreur contact:", error);
     return NextResponse.json(
       { error: "Erreur lors de l'envoi du message" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

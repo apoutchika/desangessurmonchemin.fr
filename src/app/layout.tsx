@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { SiteNav } from '@/components/ui/SiteNav';
 import { SiteFooter } from '@/components/ui/SiteFooter';
+import { CookieConsent } from '@/components/ui/CookieConsent';
 
 export const metadata: Metadata = {
   title: {
@@ -9,8 +10,7 @@ export const metadata: Metadata = {
     template: '%s — Des anges sur mon chemin',
   },
   description:
-    'Soixante jours de marche, mille deux cents kilomètres, un seul fil conducteur : ' +
-    'la quête de ce que la lenteur révèle.',
+    'De Lyon à Compostelle, 1 814 km seul mais jamais vraiment. Le récit d\'une aventure humaine portée par les rencontres du chemin.',
   icons: {
     icon: [
       { url: '/favicon.png', type: 'image/png' },
@@ -41,6 +41,7 @@ export default function RootLayout({
         <SiteNav />
         <main translate="yes">{children}</main>
         <SiteFooter />
+        <CookieConsent />
       </body>
     </html>
   );

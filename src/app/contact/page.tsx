@@ -112,6 +112,12 @@ export default function ContactPage() {
       }
 
       setStatus("success");
+      
+      // Tracker l'envoi du formulaire
+      if (typeof window !== 'undefined') {
+        const { trackContact } = await import('@/lib/analytics');
+        trackContact();
+      }
     } catch {
       setServerError(
         "Impossible d'envoyer le message. Vérifiez votre connexion.",
