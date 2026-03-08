@@ -11,7 +11,7 @@
     "test": "vitest",
     "check-config": "node scripts/check-config.js",
     "migrate-db": "node scripts/migrate-db.js",
-    "init-turso": "node scripts/init-turso.js"
+    "init-turso": "node scripts/init-turso.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -43,6 +43,7 @@
     "@types/node": "^25.3.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "dotenv": "^17.3.1",
     "eslint": "^10.0.3",
     "eslint-config-next": "^16.1.6",
     "typescript": "^5.9.3",
