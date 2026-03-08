@@ -19,7 +19,10 @@ export function CookieConsent() {
     if (!consent) {
       setShow(true);
     } else if (consent === "accepted") {
-      loadGoogleAnalytics();
+      // Petit délai pour s'assurer que le DOM est prêt
+      setTimeout(() => {
+        loadGoogleAnalytics();
+      }, 100);
     }
   }, []);
 
@@ -122,27 +125,45 @@ export function CookieConsent() {
 }
 
 function loadGoogleAnalytics() {
-  // Remplace par ton ID Google Analytics
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
-  console.log({ GA_ID });
+  
+  if (!GA_ID) {
+    console.warn('Google Analytics ID not found');
+    return;
+  }
 
-  if (!GA_ID) return;
+  // Vérifier si déjà chargé
+  if (window.gtag) {
+    console.log('Google Analytics already loaded');
+    return;
+  }
+
+  console.log('Loading Google Analytics:', GA_ID);
+
+  // Initialiser dataLayer AVANT de charger le script
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function() {
+    window.dataLayer!.push(arguments);
+  };
 
   // Charger le script Google Analytics
   const script = document.createElement("script");
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
   script.async = true;
+  
+  script.onload = () => {
+    console.log('Google Analytics script loaded');
+    // Initialiser après le chargement
+    window.gtag!("js", new Date());
+    window.gtag!("config", GA_ID, {
+      anonymize_ip: true,
+      cookie_flags: 'SameSite=None;Secure',
+    });
+  };
+
+  script.onerror = () => {
+    console.error('Failed to load Google Analytics script');
+  };
+
   document.head.appendChild(script);
-
-  // Initialiser gtag
-  window.dataLayer = window.dataLayer || [];
-  function gtag(...args: any[]) {
-    window.dataLayer!.push(args);
-  }
-  window.gtag = gtag;
-
-  gtag("js", new Date());
-  gtag("config", GA_ID, {
-    anonymize_ip: true, // Anonymiser les IPs pour le RGPD
-  });
 }
