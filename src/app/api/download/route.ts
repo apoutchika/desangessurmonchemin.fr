@@ -21,10 +21,10 @@ export async function POST(request: Request) {
     const userAgent = headersList.get('user-agent') || 'unknown';
 
     // Incrémenter le compteur (retourne false si déjà téléchargé)
-    const incremented = incrementDownload(format as 'epub' | 'pdf', ip, userAgent);
+    const incremented = await incrementDownload(format as 'epub' | 'pdf', ip, userAgent);
 
     // Retourner les stats mises à jour
-    const stats = getDownloadStats();
+    const stats = await getDownloadStats();
 
     return NextResponse.json({ 
       success: true, 

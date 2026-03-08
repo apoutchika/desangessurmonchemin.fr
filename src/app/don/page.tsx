@@ -1,7 +1,7 @@
 "use client";
 
 import { TokenBTC, TokenETH, TokenSOL } from "@web3icons/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { BookCover } from "@/components/ui/BookCover";
 
@@ -248,7 +248,7 @@ function CryptoCard({ wallet }: { wallet: Wallet }) {
 
 type Tab = "fiat" | "crypto";
 
-export default function DonPage() {
+function DonPageContent() {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<Tab>("fiat");
 
@@ -640,5 +640,14 @@ export default function DonPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+
+export default function DonPage() {
+  return (
+    <Suspense fallback={<div className="simple-page">Chargement...</div>}>
+      <DonPageContent />
+    </Suspense>
   );
 }

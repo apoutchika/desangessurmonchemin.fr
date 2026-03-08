@@ -10,10 +10,12 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "check-config": "node scripts/check-config.js",
-    "migrate-db": "node scripts/migrate-db.js"
+    "migrate-db": "node scripts/migrate-db.js",
+    "init-turso": "node scripts/init-turso.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@libsql/client": "^0.17.0",
     "@stripe/stripe-js": "^8.9.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/nodemailer": "^7.0.11",

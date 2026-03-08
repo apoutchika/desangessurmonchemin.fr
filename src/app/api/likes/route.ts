@@ -20,7 +20,7 @@ export async function POST(request: Request) {
                'unknown';
 
     // Toggle le like
-    const result = toggleLike(dayId, ip, headersList.get('user-agent') || undefined);
+    const result = await toggleLike(dayId, ip, headersList.get('user-agent') || undefined);
 
     return NextResponse.json(result);
   } catch (error) {
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
                headersList.get('x-real-ip') || 
                'unknown';
 
-    const result = getLikesForDay(dayId, ip);
+    const result = await getLikesForDay(dayId, ip);
 
     return NextResponse.json(result);
   } catch (error) {

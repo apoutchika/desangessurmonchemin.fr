@@ -22,10 +22,9 @@ interface DataPoint {
 }
 
 interface Props {
-  points: GpxPoint[]; // points GPX bruts avec lat/lng/ele
+  points: GpxPoint[];
 }
 
-// Ticks tous les km entiers
 function kmTicks(data: DataPoint[]): number[] {
   if (!data.length) return [];
   const max = data[data.length - 1].distance;
@@ -34,7 +33,6 @@ function kmTicks(data: DataPoint[]): number[] {
   return ticks;
 }
 
-// Tooltip personnalisé
 function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload as DataPoint;
@@ -63,10 +61,8 @@ function CustomTooltip({ active, payload }: any) {
 }
 
 export function DayElevation({ points }: Props) {
-  // Construire les données enrichies avec lat/lng
-  const profile = getElevationProfile(points); // { distance, elevation }[]
+  const profile = getElevationProfile(points);
 
-  // On réinjecte lat/lng en interpolant sur l'index
   const data: DataPoint[] = profile.map((p, i) => {
     const srcIdx = Math.round(
       (i / Math.max(profile.length - 1, 1)) * (points.length - 1),
@@ -90,7 +86,6 @@ export function DayElevation({ points }: Props) {
   const elevations = data.map((d) => d.elevation);
   const minEle = Math.min(...elevations);
   const maxEle = Math.max(...elevations);
-  // Marge visuelle de 10% en bas pour que le remplissage ne colle pas
   const yDomain = [
     Math.max(0, minEle - (maxEle - minEle) * 0.15),
     maxEle + (maxEle - minEle) * 0.1,
@@ -143,14 +138,11 @@ export function DayElevation({ points }: Props) {
           <YAxis
             domain={yDomain}
             tickFormatter={(v) => formatNumber(v, "m", 0)}
-            tick={
-              {
-                fontSize: 10,
-                fill: "var(--muted)",
-                fontFamily: "var(--font-sans)",
-                fontVariantNumeric: "tabular-nums",
-              } as React.SVGAttributes<SVGElement>
-            }
+            tick={{
+              fontSize: 10,
+              fill: "var(--muted)",
+              fontFamily: "var(--font-sans)",
+            }}
             axisLine={false}
             tickLine={false}
             width={44}

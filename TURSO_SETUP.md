@@ -10,7 +10,7 @@ Turso est une base de données SQLite distribuée, parfaite pour Vercel et les a
 - ✅ Backups automatiques
 - ✅ Pas besoin de gérer le fichier local
 
-## Installation
+## Installation et Configuration
 
 ### 1. Installer le CLI Turso
 
@@ -55,98 +55,33 @@ TURSO_DATABASE_URL=libsql://your-database.turso.io
 TURSO_AUTH_TOKEN=eyJhbGc...votre_token
 ```
 
-### 7. Installer le client Turso
+### 7. Installer le client (déjà fait)
 
 ```bash
-npm install @libsql/client
+pnpm add @libsql/client
 ```
 
 ### 8. Initialiser les tables
 
-Créer un script `scripts/init-turso.js` :
-
-```javascript
-const { createClient } = require('@libsql/client');
-require('dotenv').config({ path: '.env.local' });
-
-const db = createClient({
-  url: process.env.TURSO_DATABASE_URL,
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
-
-async function init() {
-  console.log('🔧 Initialisation de la base Turso...');
-  
-  // Créer les tables
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      ip_hash TEXT NOT NULL UNIQUE,
-      user_agent TEXT,
-      first_visit DATETIME DEFAULT CURRENT_TIMESTAMP,
-      last_visit DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS downloads (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      format TEXT NOT NULL,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      UNIQUE(user_id, format)
-    )
-  `);
-
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS likes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      day_id INTEGER NOT NULL,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      UNIQUE(day_id, user_id)
-    )
-  `);
-
-  // Créer les index
-  await db.execute('CREATE INDEX IF NOT EXISTS idx_users_ip_hash ON users(ip_hash)');
-  await db.execute('CREATE INDEX IF NOT EXISTS idx_downloads_user_format ON downloads(user_id, format)');
-  await db.execute('CREATE INDEX IF NOT EXISTS idx_likes_day ON likes(day_id)');
-  await db.execute('CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id)');
-
-  console.log('✅ Base de données initialisée !');
-}
-
-init().catch(console.error);
-```
-
-Exécuter :
-
 ```bash
-node scripts/init-turso.js
+pnpm run init-turso
 ```
 
-## Utilisation dans le code
+Cette commande va créer automatiquement toutes les tables et index nécessaires.
 
-### Option 1 : Remplacer `src/lib/db.ts`
+## ✅ Configuration actuelle
 
-Renommer `src/lib/db.ts` en `src/lib/db-local.ts` (backup)
-Renommer `src/lib/db-turso.ts` en `src/lib/db.ts`
+L'application est déjà configurée pour utiliser Turso :
 
-### Option 2 : Utiliser une variable d'environnement
+- ✅ Package `@libsql/client` installé
+- ✅ `src/lib/db.ts` utilise Turso
+- ✅ Variables d'environnement configurées dans `.env.local`
+- ✅ Routes API mises à jour pour l'async
+- ✅ Script d'initialisation disponible (`pnpm run init-turso`)
 
-Dans `src/lib/db.ts`, ajouter en haut :
+## Backup SQLite local
 
-```typescript
-// Utiliser Turso si configuré, sinon SQLite local
-if (process.env.TURSO_DATABASE_URL) {
-  module.exports = require('./db-turso');
-} else {
-  // Code SQLite local actuel
-}
-```
+L'ancienne version SQLite locale a été sauvegardée dans `src/lib/db-sqlite.ts.backup` au cas où.
 
 ## Commandes utiles
 
