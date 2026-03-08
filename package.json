@@ -11,7 +11,9 @@
     "test": "vitest",
     "check-config": "node scripts/check-config.js",
     "migrate-db": "node scripts/migrate-db.js",
-    "init-turso": "node scripts/init-turso.mjs"
+    "init-turso": "node scripts/init-turso.mjs",
+    "reset-turso": "node scripts/reset-turso.mjs",
+    "check-turso": "node scripts/check-turso.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -35,6 +37,7 @@
     "recharts": "^3.8.0",
     "resend": "^6.9.3",
     "stripe": "^20.4.1",
+    "swr": "^2.4.1",
     "yup": "^1.7.1"
   },
   "devDependencies": {

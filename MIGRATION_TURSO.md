@@ -35,6 +35,16 @@ pnpm run init-turso
 
 Cela va créer toutes les tables et index nécessaires dans ta base Turso.
 
+## 🔄 Pour réinitialiser la base (supprimer toutes les données)
+
+Si tu veux repartir de zéro:
+
+```bash
+pnpm run reset-turso
+```
+
+⚠️ Attention: Cette commande supprime TOUTES les données!
+
 ## 📝 Variables d'environnement requises
 
 Dans `.env.local` :

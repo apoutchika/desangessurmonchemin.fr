@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useLikes } from '@/hooks/useLikes';
 
 interface Props {
   dayId: number;
@@ -15,24 +16,10 @@ interface Particle {
 }
 
 export function DayLike({ dayId }: Props) {
-  const [liked, setLiked] = useState(false);
-  const [count, setCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const { count, liked, isLoading, toggleLike } = useLikes(dayId);
   const [animating, setAnimating] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [showTears, setShowTears] = useState(false);
-
-  useEffect(() => {
-    // Charger l'état initial
-    fetch(`/api/likes?dayId=${dayId}`)
-      .then(res => res.json())
-      .then(data => {
-        setLiked(data.liked);
-        setCount(data.count);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [dayId]);
 
   const createParticles = (isLike: boolean) => {
     if (isLike) {
@@ -49,45 +36,40 @@ export function DayLike({ dayId }: Props) {
       // Nettoyer après l'animation
       setTimeout(() => setParticles([]), 1500);
     } else {
-      // Afficher les larmes
+      // Afficher les larmes (seulement quand c'est nous qui enlevons)
       setShowTears(true);
       setTimeout(() => setShowTears(false), 1500);
     }
   };
 
   const handleLike = async () => {
-    if (loading) return;
+    if (isLoading) return;
 
     const wasLiked = liked;
     
     setAnimating(true);
     setTimeout(() => setAnimating(false), 600);
 
-    try {
-      const res = await fetch('/api/likes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dayId }),
-      });
-
-      const data = await res.json();
-      setLiked(data.liked);
-      setCount(data.count);
-      
+    const result = await toggleLike();
+    
+    if (result.success) {
       // Tracker dans GA
       if (typeof window !== 'undefined') {
         const { trackLike } = await import('@/lib/analytics');
-        trackLike(dayId, data.liked ? 'add' : 'remove');
+        trackLike(dayId, result.action);
       }
       
-      // Créer les particules après avoir reçu la réponse
-      createParticles(data.liked);
-    } catch (error) {
-      console.error('Erreur like:', error);
+      // Créer les particules seulement pour nos propres actions
+      // Les autres utilisateurs verront juste le count changer
+      if (result.action === 'add') {
+        createParticles(true);
+      } else {
+        createParticles(false);
+      }
     }
   };
 
-  if (loading) return null;
+  if (isLoading) return null;
 
   return (
     <div style={{ position: 'relative' }}>
@@ -127,7 +109,7 @@ export function DayLike({ dayId }: Props) {
         </div>
       ))}
 
-      {/* Larmes qui tombent */}
+      {/* Larmes qui tombent (seulement quand c'est nous qui enlevons) */}
       {showTears && (
         <>
           <div className="day-like-tear" style={{ left: '30%', animationDelay: '0s' }}>💧</div>

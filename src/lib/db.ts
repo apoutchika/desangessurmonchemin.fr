@@ -116,6 +116,50 @@ export async function getDownloadStats() {
   };
 }
 
+export async function addLike(dayId: number, ip: string, userAgent?: string): Promise<{ count: number }> {
+  const userId = await getOrCreateUser(ip, userAgent);
+
+  // Vérifier si déjà liké
+  const existing = await db.execute({
+    sql: 'SELECT id FROM likes WHERE day_id = ? AND user_id = ?',
+    args: [dayId, userId],
+  });
+
+  if (existing.rows.length === 0) {
+    // Ajouter le like
+    await db.execute({
+      sql: 'INSERT INTO likes (day_id, user_id) VALUES (?, ?)',
+      args: [dayId, userId],
+    });
+  }
+
+  // Retourner le nouveau count
+  const count = await db.execute({
+    sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
+    args: [dayId],
+  });
+
+  return { count: (count.rows[0].count as number) || 0 };
+}
+
+export async function removeLike(dayId: number, ip: string, userAgent?: string): Promise<{ count: number }> {
+  const userId = await getOrCreateUser(ip, userAgent);
+
+  // Retirer le like
+  await db.execute({
+    sql: 'DELETE FROM likes WHERE day_id = ? AND user_id = ?',
+    args: [dayId, userId],
+  });
+
+  // Retourner le nouveau count
+  const count = await db.execute({
+    sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
+    args: [dayId],
+  });
+
+  return { count: (count.rows[0].count as number) || 0 };
+}
+
 export async function toggleLike(dayId: number, ip: string, userAgent?: string): Promise<{ liked: boolean; count: number }> {
   const userId = await getOrCreateUser(ip, userAgent);
 
