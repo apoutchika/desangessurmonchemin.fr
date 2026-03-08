@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-12-18.acacia",
+  apiVersion: "2026-02-25.clover",
 });
 
 export async function POST(req: NextRequest) {
@@ -11,10 +11,7 @@ export async function POST(req: NextRequest) {
 
     // Validation
     if (!amount || amount < 1) {
-      return NextResponse.json(
-        { error: "Montant invalide" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Montant invalide" }, { status: 400 });
     }
 
     // Créer une session Checkout
@@ -46,7 +43,7 @@ export async function POST(req: NextRequest) {
     console.error("Stripe error:", error);
     return NextResponse.json(
       { error: error.message || "Erreur lors de la création de la session" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
