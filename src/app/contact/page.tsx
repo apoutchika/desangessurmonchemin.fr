@@ -112,10 +112,10 @@ export default function ContactPage() {
       }
 
       setStatus("success");
-      
+
       // Tracker l'envoi du formulaire
-      if (typeof window !== 'undefined') {
-        const { trackContact } = await import('@/lib/analytics');
+      if (typeof window !== "undefined") {
+        const { trackContact } = await import("@/lib/analytics");
         trackContact();
       }
     } catch {
@@ -284,7 +284,7 @@ export default function ContactPage() {
                 </option>
               ))}
             </select>
-            
+
             {showCustomSubject && (
               <input
                 id="subject"
@@ -297,7 +297,7 @@ export default function ContactPage() {
                 }}
               />
             )}
-            
+
             {errors.subject && (
               <p
                 style={{
@@ -427,7 +427,7 @@ export default function ContactPage() {
             Vous préférez écrire directement ?
           </p>
           <a
-            href="mailto:contact@votredomaine.fr"
+            href="mailto:contact@desangessurmonchemin.fr"
             className="link-underline"
             style={{
               fontSize: "0.9375rem",
@@ -435,7 +435,7 @@ export default function ContactPage() {
               fontFamily: "var(--font-serif)",
             }}
           >
-            contact@votredomaine.fr
+            contact@desangessurmonchemin.fr
           </a>
         </div>
       </div>

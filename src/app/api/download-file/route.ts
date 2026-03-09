@@ -14,8 +14,9 @@ export async function GET(request: Request) {
       );
     }
 
-    // Chemin vers le fichier
-    const filePath = path.join(process.cwd(), 'public', 'downloads', `pelerinage.${format}`);
+    // Chemin vers le fichier PRIVÉ (hors du dossier public)
+    // Les fichiers sont dans /private/downloads/ à la racine du projet
+    const filePath = path.join(process.cwd(), 'private', 'downloads', `pelerinage.${format}`);
     
     // Lire le fichier
     const fileBuffer = await readFile(filePath);
@@ -25,6 +26,9 @@ export async function GET(request: Request) {
     headers.set('Content-Type', format === 'epub' ? 'application/epub+zip' : 'application/pdf');
     headers.set('Content-Disposition', `attachment; filename="des-anges-sur-mon-chemin.${format}"`);
     headers.set('Content-Length', fileBuffer.length.toString());
+    
+    // Headers de cache (optionnel - cache pendant 1 heure)
+    headers.set('Cache-Control', 'private, max-age=3600');
 
     return new NextResponse(fileBuffer, {
       status: 200,
@@ -38,3 +42,6 @@ export async function GET(request: Request) {
     );
   }
 }
+
+// Désactiver le cache Next.js pour cette route
+export const dynamic = 'force-dynamic';

@@ -1,5 +1,6 @@
 import { createClient } from '@libsql/client';
 import crypto from 'crypto';
+import { cache } from './cache';
 
 // Client Turso
 const db = createClient({
@@ -98,10 +99,21 @@ export async function incrementDownload(format: 'epub' | 'pdf', ip: string, user
     sql: 'INSERT INTO downloads (user_id, format) VALUES (?, ?)',
     args: [userId, format],
   });
+
+  // Invalider le cache
+  cache.invalidateDownloadStats();
+
   return true;
 }
 
 export async function getDownloadStats() {
+  // Vérifier le cache d'abord
+  const cached = cache.getDownloadStats();
+  if (cached) {
+    return cached;
+  }
+
+  // Sinon, requête DB
   const total = await db.execute('SELECT COUNT(*) as count FROM downloads');
   const byFormat = await db.execute(`
     SELECT format, COUNT(DISTINCT user_id) as count 
@@ -109,15 +121,21 @@ export async function getDownloadStats() {
     GROUP BY format
   `);
 
-  return {
+  const stats = {
     total: (total.rows[0].count as number) || 0,
     epub: (byFormat.rows.find((r: any) => r.format === 'epub')?.count as number) || 0,
     pdf: (byFormat.rows.find((r: any) => r.format === 'pdf')?.count as number) || 0,
   };
+
+  // Mettre en cache
+  cache.setDownloadStats(stats);
+
+  return stats;
 }
 
 export async function addLike(dayId: number, ip: string, userAgent?: string): Promise<{ count: number }> {
   const userId = await getOrCreateUser(ip, userAgent);
+  const ipHash = hashIP(ip);
 
   // Vérifier si déjà liké
   const existing = await db.execute({
@@ -131,19 +149,29 @@ export async function addLike(dayId: number, ip: string, userAgent?: string): Pr
       sql: 'INSERT INTO likes (day_id, user_id) VALUES (?, ?)',
       args: [dayId, userId],
     });
+
+    // Invalider le cache
+    cache.invalidateLikes(dayId);
+    cache.addUserLike(ipHash, dayId);
   }
 
-  // Retourner le nouveau count
-  const count = await db.execute({
-    sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
-    args: [dayId],
-  });
+  // Retourner le nouveau count (depuis le cache ou DB)
+  let count = cache.getLikesCount(dayId);
+  if (count === null) {
+    const result = await db.execute({
+      sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
+      args: [dayId],
+    });
+    count = (result.rows[0].count as number) || 0;
+    cache.setLikesCount(dayId, count);
+  }
 
-  return { count: (count.rows[0].count as number) || 0 };
+  return { count };
 }
 
 export async function removeLike(dayId: number, ip: string, userAgent?: string): Promise<{ count: number }> {
   const userId = await getOrCreateUser(ip, userAgent);
+  const ipHash = hashIP(ip);
 
   // Retirer le like
   await db.execute({
@@ -151,13 +179,22 @@ export async function removeLike(dayId: number, ip: string, userAgent?: string):
     args: [dayId, userId],
   });
 
-  // Retourner le nouveau count
-  const count = await db.execute({
-    sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
-    args: [dayId],
-  });
+  // Invalider le cache
+  cache.invalidateLikes(dayId);
+  cache.removeUserLike(ipHash, dayId);
 
-  return { count: (count.rows[0].count as number) || 0 };
+  // Retourner le nouveau count (depuis le cache ou DB)
+  let count = cache.getLikesCount(dayId);
+  if (count === null) {
+    const result = await db.execute({
+      sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
+      args: [dayId],
+    });
+    count = (result.rows[0].count as number) || 0;
+    cache.setLikesCount(dayId, count);
+  }
+
+  return { count };
 }
 
 export async function toggleLike(dayId: number, ip: string, userAgent?: string): Promise<{ liked: boolean; count: number }> {
@@ -194,30 +231,44 @@ export async function toggleLike(dayId: number, ip: string, userAgent?: string):
 }
 
 export async function getLikesForDay(dayId: number, ip?: string) {
-  const count = await db.execute({
-    sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
-    args: [dayId],
-  });
+  // Vérifier le cache pour le count
+  let count = cache.getLikesCount(dayId);
+  if (count === null) {
+    const result = await db.execute({
+      sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
+      args: [dayId],
+    });
+    count = (result.rows[0].count as number) || 0;
+    cache.setLikesCount(dayId, count);
+  }
   
   let liked = false;
   if (ip) {
     const ipHash = hashIP(ip);
-    const user = await db.execute({
-      sql: 'SELECT id FROM users WHERE ip_hash = ?',
-      args: [ipHash],
-    });
     
-    if (user.rows.length > 0) {
-      const userId = user.rows[0].id as number;
-      const existing = await db.execute({
-        sql: 'SELECT id FROM likes WHERE day_id = ? AND user_id = ?',
-        args: [dayId, userId],
+    // Vérifier le cache utilisateur
+    const userLikes = cache.getUserLikes(ipHash);
+    if (userLikes) {
+      liked = userLikes.has(dayId);
+    } else {
+      // Sinon, requête DB
+      const user = await db.execute({
+        sql: 'SELECT id FROM users WHERE ip_hash = ?',
+        args: [ipHash],
       });
-      liked = existing.rows.length > 0;
+      
+      if (user.rows.length > 0) {
+        const userId = user.rows[0].id as number;
+        const existing = await db.execute({
+          sql: 'SELECT id FROM likes WHERE day_id = ? AND user_id = ?',
+          args: [dayId, userId],
+        });
+        liked = existing.rows.length > 0;
+      }
     }
   }
 
-  return { count: (count.rows[0].count as number) || 0, liked };
+  return { count, liked };
 }
 
 export default db;

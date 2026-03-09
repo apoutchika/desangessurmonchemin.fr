@@ -1,9 +1,13 @@
 "use client";
 
 import { TokenBTC, TokenETH, TokenSOL } from "@web3icons/react";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { BookCover } from "@/components/ui/BookCover";
+import { useForm, Controller, useWatch } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { donationSchema, type DonationFormData } from "@/lib/donationSchema";
+import { NumericFormat } from "react-number-format";
 
 const AMOUNTS = [5, 10, 15, 20, 30, 50] as const;
 
@@ -29,7 +33,7 @@ const CRYPTO_WALLETS = [
   {
     id: "sol",
     name: "Solana",
-    symbol: "SOL / USDC",
+    symbol: "SOL",
     address: "BvjFLWtiC6MHwz2ooPjdZtbXjQxFapF7sZHEFgjX3Nsf",
     color: "#9945ff",
     network: "Solana",
@@ -253,28 +257,42 @@ function DonPageContent() {
   const [tab, setTab] = useState<Tab>("fiat");
 
   const [amount, setAmount] = useState<number | null>(15);
-  const [customAmount, setCustomAmount] = useState<string>("");
   const [showCustomInput, setShowCustomInput] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // React Hook Form avec Yup
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<DonationFormData>({
+    resolver: yupResolver(donationSchema),
+    defaultValues: {
+      amount: 15,
+    },
+  });
+  const customAmount = watch("amount");
+
   // Vérifier si on revient de Stripe
   useEffect(() => {
     if (searchParams.get("success") === "true") {
       setShowSuccess(true);
-      
+
       // Tracker le don réussi
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const amount = searchParams.get("amount");
         if (amount) {
-          import('@/lib/analytics').then(({ trackDonationSuccess }) => {
+          import("@/lib/analytics").then(({ trackDonationSuccess }) => {
             trackDonationSuccess(Number(amount));
           });
         }
       }
-      
+
       // Nettoyer l'URL après 5 secondes
       setTimeout(() => {
         window.history.replaceState({}, "", "/don");
@@ -282,16 +300,45 @@ function DonPageContent() {
     }
   }, [searchParams]);
 
-  const handlePayment = async () => {
-    const finalAmount = showCustomInput ? Number(customAmount) : amount;
-    if (!finalAmount || finalAmount <= 0) return;
+  // Message d'encouragement basé sur le montant (non-bloquant, affiché en permanence)
+  const encouragementMsg = useMemo(() => {
+    const value = showCustomInput ? customAmount : amount;
+    if (!value || value < 50) return null;
+
+    if (value >= 50 && value < 100) {
+      return "💚 Wahou, merci !";
+    }
+    if (value >= 100 && value < 500) {
+      return "🙏 Quelle générosité, merci du fond du cœur !";
+    }
+    return null;
+  }, [showCustomInput, customAmount, amount]);
+
+  // Vérifier si le montant est trop élevé pour le paiement en ligne
+  const isAmountTooHigh = useMemo(() => {
+    const value = showCustomInput ? customAmount : amount;
+    return value && value >= 500;
+  }, [showCustomInput, customAmount, amount]);
+
+  const handlePayment = async (data?: DonationFormData) => {
+    const finalAmount = showCustomInput ? data?.amount : amount;
+
+    if (!finalAmount || finalAmount < 1) {
+      setError("Le montant minimum est de 1€");
+      return;
+    }
+
+    // Ne devrait pas arriver car le bouton est remplacé pour les montants >= 500
+    if (finalAmount >= 500) {
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
     // Tracker l'intention de don
-    if (typeof window !== 'undefined') {
-      const { trackDonation } = await import('@/lib/analytics');
+    if (typeof window !== "undefined") {
+      const { trackDonation } = await import("@/lib/analytics");
       trackDonation(finalAmount);
     }
 
@@ -302,21 +349,56 @@ function DonPageContent() {
         body: JSON.stringify({ amount: finalAmount }),
       });
 
-      const data = await response.json();
+      const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de la création du paiement");
+        throw new Error(
+          responseData.error || "Erreur lors de la création du paiement",
+        );
       }
 
       // Rediriger vers Stripe
-      if (data.url) {
-        window.location.href = data.url;
+      if (responseData.url) {
+        window.location.href = responseData.url;
       }
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
     }
   };
+
+  const btnLabel = useMemo(() => {
+    if (loading) return "Redirection...";
+
+    const value = showCustomInput ? customAmount : amount;
+
+    // Si pas de valeur ou invalide
+    if (!value || Number.isNaN(value)) {
+      return showCustomInput ? "Entrez un montant" : "Choisissez un montant";
+    }
+
+    // Si valeur trop petite
+    if (value < 1) {
+      return "Montant minimum : 1€";
+    }
+
+    // Formater avec séparateur de milliers
+    const formatted = value
+      .toLocaleString("fr-FR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      })
+      .replace(/\s/g, " "); // Espace insécable
+
+    return `Donner ${formatted} € →`;
+  }, [loading, showCustomInput, customAmount, amount]);
+
+  const btnDisabled = useMemo(() => {
+    if (loading) return true;
+    const value = showCustomInput ? customAmount : amount;
+    if (!value || Number.isNaN(value)) return true;
+    return value < 1;
+  }, [loading, showCustomInput, customAmount, amount]);
 
   return (
     <div className="simple-page">
@@ -397,9 +479,9 @@ function DonPageContent() {
           >
             <p style={{ marginBottom: "1rem" }}>
               Écrire ce livre a demandé des centaines d'heures de travail :
-              marcher, photographier, écrire, relire, coder ce site. Si vous avez 
-              terminé la lecture et que ce récit vous a touché, accompagné ou inspiré, 
-              votre soutien permet de continuer à créer et partager.
+              marcher, photographier, écrire, relire, coder ce site. Si vous
+              avez terminé la lecture et que ce récit vous a touché, accompagné
+              ou inspiré, votre soutien permet de continuer à créer et partager.
             </p>
             <p style={{ margin: 0 }}>
               Chaque contribution, quelle que soit sa forme, est reçue avec
@@ -460,9 +542,11 @@ function DonPageContent() {
                 {AMOUNTS.map((a) => (
                   <button
                     key={a}
+                    type="button"
                     className={`don-amount-btn${amount === a && !showCustomInput ? " don-amount-btn--selected" : ""}`}
                     onClick={() => {
                       setAmount(a);
+                      setValue("amount", a);
                       setShowCustomInput(false);
                     }}
                   >
@@ -470,6 +554,7 @@ function DonPageContent() {
                   </button>
                 ))}
                 <button
+                  type="button"
                   className={`don-amount-btn${showCustomInput ? " don-amount-btn--selected" : ""}`}
                   onClick={() => {
                     setShowCustomInput(true);
@@ -481,97 +566,218 @@ function DonPageContent() {
               </div>
 
               {showCustomInput && (
+                <form onSubmit={handleSubmit(handlePayment)}>
+                  <div
+                    style={{
+                      marginBottom: "1.5rem",
+                      animation: "fadeIn 0.2s ease-in",
+                    }}
+                  >
+                    <FieldLabel>Votre montant</FieldLabel>
+                    <div style={{ position: "relative" }}>
+                      <Controller
+                        name="amount"
+                        control={control}
+                        render={({ field }) => (
+                          <NumericFormat
+                            name={field.name}
+                            id="custom"
+                            placeholder="Entrez un montant"
+                            autoComplete="off"
+                            autoFocus
+                            thousandSeparator=" "
+                            decimalSeparator=","
+                            decimalScale={2}
+                            allowNegative={false}
+                            min={1}
+                            max={10_000}
+                            onValueChange={(values) => {
+                              field.onChange(Number(values.floatValue));
+                            }}
+                            style={{
+                              width: "100%",
+                              padding: "0.875rem 2.5rem 0.875rem 1rem",
+                              border: errors.amount
+                                ? "1.5px solid var(--rust)"
+                                : "1.5px solid var(--forest)",
+                              borderRadius: "8px",
+                              fontSize: "1rem",
+                              fontFamily: "var(--font-serif)",
+                              background: "var(--white)",
+                              color: "var(--ink)",
+                              outline: "none",
+                              transition: "all 0.2s",
+                            }}
+                          />
+                        )}
+                      />
+                      <span
+                        style={{
+                          position: "absolute",
+                          right: "1rem",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          color: "var(--muted)",
+                          fontFamily: "var(--font-sans)",
+                          fontSize: "0.875rem",
+                        }}
+                      >
+                        €
+                      </span>
+                    </div>
+                    {errors.amount && (
+                      <p
+                        style={{
+                          marginTop: "0.5rem",
+                          fontSize: "0.8125rem",
+                          color: "var(--rust)",
+                          fontFamily: "var(--font-sans)",
+                        }}
+                      >
+                        {errors.amount.message}
+                      </p>
+                    )}
+                  </div>
+                </form>
+              )}
+
+              {encouragementMsg && (
                 <div
                   style={{
-                    marginBottom: "1.5rem",
-                    animation: "fadeIn 0.2s ease-in",
+                    background: "rgba(90, 122, 95, 0.1)",
+                    border: "1.5px solid var(--forest)",
+                    borderRadius: "8px",
+                    padding: "0.875rem 1rem",
+                    marginBottom: "1rem",
+                    fontSize: "0.875rem",
+                    color: "var(--forest)",
+                    lineHeight: 1.5,
+                    fontFamily: "var(--font-sans)",
+                    animation: "fadeIn 0.3s ease-in",
+                    textAlign: "center",
                   }}
                 >
-                  <FieldLabel>Votre montant</FieldLabel>
-                  <div style={{ position: "relative" }}>
-                    <input
-                      id="custom"
-                      type="number"
-                      min="1"
-                      value={customAmount}
-                      onChange={(e) => setCustomAmount(e.target.value)}
-                      placeholder="Entrez un montant"
-                      autoFocus
-                      style={{
-                        width: "100%",
-                        padding: "0.875rem 2.5rem 0.875rem 1rem",
-                        border: "1.5px solid var(--forest)",
-                        borderRadius: "8px",
-                        fontSize: "1rem",
-                        fontFamily: "var(--font-serif)",
-                        background: "var(--white)",
-                        color: "var(--ink)",
-                        outline: "none",
-                        transition: "all 0.2s",
-                      }}
-                    />
-                    <span
-                      style={{
-                        position: "absolute",
-                        right: "1rem",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        color: "var(--muted)",
-                        fontFamily: "var(--font-sans)",
-                        fontSize: "0.875rem",
-                      }}
-                    >
-                      €
-                    </span>
-                  </div>
+                  {encouragementMsg}
                 </div>
               )}
 
-              <button
-                className="btn btn-primary"
-                style={{
-                  width: "100%",
-                  justifyContent: "center",
-                  fontSize: "1rem",
-                  padding: "1rem",
-                }}
-                disabled={
-                  loading ||
-                  (showCustomInput
-                    ? !customAmount || Number(customAmount) <= 0
-                    : !amount || amount <= 0)
-                }
-                onClick={handlePayment}
-              >
-                {loading
-                  ? "Redirection..."
-                  : `Donner ${showCustomInput ? (customAmount ? `${customAmount} €` : "") : amount ? `${amount} €` : ""} →`}
-              </button>
-
-              {error && (
-                <p
+              {isAmountTooHigh ? (
+                <div
                   style={{
-                    marginTop: "1rem",
-                    fontSize: "0.875rem",
-                    color: "var(--rust)",
-                    lineHeight: 1.6,
+                    background: "rgba(90, 122, 95, 0.05)",
+                    border: "2px solid var(--forest)",
+                    borderRadius: "10px",
+                    padding: "1.5rem",
+                    textAlign: "center",
+                    animation: "fadeIn 0.3s ease-in",
                   }}
                 >
-                  ⚠️ {error}
-                </p>
-              )}
+                  <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>
+                    ✨
+                  </div>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-serif)",
+                      fontSize: "1.25rem",
+                      color: "var(--forest)",
+                      marginBottom: "0.75rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    C'est un geste extraordinaire !
+                  </h3>
+                  <p
+                    style={{
+                      color: "var(--stone)",
+                      lineHeight: 1.7,
+                      marginBottom: "1rem",
+                      fontSize: "0.9375rem",
+                    }}
+                  >
+                    Pour un montant aussi généreux, prenez le temps de vérifier
+                    que c'est bien ce que vous souhaitez.
+                  </p>
+                  <p
+                    style={{
+                      color: "var(--earth)",
+                      lineHeight: 1.7,
+                      marginBottom: "1.25rem",
+                      fontSize: "0.9375rem",
+                    }}
+                  >
+                    Si vous confirmez votre intention, merci de{" "}
+                    <a
+                      href="/contact"
+                      className="link-underline"
+                      style={{
+                        color: "var(--forest)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      me contacter directement
+                    </a>{" "}
+                    pour que nous puissions échanger.
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "0.8125rem",
+                      color: "var(--muted)",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    Un tel soutien mérite une attention particulière. 🙏
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <button
+                    className="btn btn-primary"
+                    style={{
+                      width: "100%",
+                      justifyContent: "center",
+                      fontSize: "1rem",
+                      padding: "1rem",
+                      minHeight: "50px",
+                    }}
+                    disabled={btnDisabled}
+                    onClick={() => {
+                      if (showCustomInput) {
+                        handleSubmit(handlePayment)();
+                      } else {
+                        handlePayment();
+                      }
+                    }}
+                    type="button"
+                  >
+                    {btnLabel}
+                  </button>
 
-              <p
-                style={{
-                  marginTop: "1.25rem",
-                  fontSize: "0.75rem",
-                  color: "var(--muted)",
-                  lineHeight: 1.6,
-                }}
-              >
-                Paiement sécurisé via Stripe. Aucun engagement, aucun
-                abonnement. Vous recevrez un reçu par email.
-              </p>
+                  {error && (
+                    <p
+                      style={{
+                        marginTop: "1rem",
+                        fontSize: "0.875rem",
+                        color: "var(--rust)",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      ⚠️ {error}
+                    </p>
+                  )}
+
+                  <p
+                    style={{
+                      marginTop: "1.25rem",
+                      fontSize: "0.75rem",
+                      color: "var(--muted)",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    Paiement sécurisé via Stripe. Aucun engagement, aucun
+                    abonnement. Vous recevrez un reçu par email.
+                  </p>
+                </>
+              )}
             </div>
           )}
 
@@ -642,7 +848,6 @@ function DonPageContent() {
     </div>
   );
 }
-
 
 export default function DonPage() {
   return (

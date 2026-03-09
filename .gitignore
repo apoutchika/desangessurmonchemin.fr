@@ -2,3 +2,9 @@ node_modules
 .next
 .env.local
 data/
+
+# Fichiers téléchargeables (ne pas commiter les gros fichiers)
+private/downloads/*.epub
+private/downloads/*.pdf
+# Mais garder le dossier
+!private/downloads/.gitkeep

@@ -72,7 +72,6 @@ export default function TelechargementPage() {
           <button
             onClick={() => handleDownload('epub')}
             className="download-card"
-            style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, width: '100%' }}
           >
             <div className="download-card__info">
               <div className="download-card__format">ePub</div>
@@ -83,7 +82,7 @@ export default function TelechargementPage() {
                 </div>
               )}
             </div>
-            <span className="btn btn-outline" style={{ pointerEvents: 'none' }}>
+            <span className="btn btn-outline">
               ↓ Télécharger
             </span>
           </button>
@@ -91,7 +90,6 @@ export default function TelechargementPage() {
           <button
             onClick={() => handleDownload('pdf')}
             className="download-card"
-            style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, width: '100%' }}
           >
             <div className="download-card__info">
               <div className="download-card__format">PDF</div>
@@ -102,7 +100,7 @@ export default function TelechargementPage() {
                 </div>
               )}
             </div>
-            <span className="btn btn-outline" style={{ pointerEvents: 'none' }}>
+            <span className="btn btn-outline">
               ↓ Télécharger
             </span>
           </button>
