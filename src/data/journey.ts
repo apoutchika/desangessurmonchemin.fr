@@ -22,7 +22,7 @@ export function getDayBySlug(slug: string) {
 
 export function getNavigation(currentDay: any) {
   const journey = getJourney();
-  const day = journey.getDayById(currentDay.id);
+  const day = journey.getDayBySlug(currentDay.slug);
   if (!day) return { prev: undefined, next: undefined };
   return journey.getNavigation(day);
 }

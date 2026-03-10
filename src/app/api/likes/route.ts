@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { toggleLike, getLikesForDay, addLike, removeLike } from "@/lib/db";
+import { toggleLike, getLikesForPage, addLike, removeLike } from "@/lib/db";
 import { headers } from "next/headers";
 
 // POST pour toggle (rétrocompatibilité)
 export async function POST(request: Request) {
   try {
-    const { dayId } = await request.json();
+    const { pageSlug } = await request.json();
 
-    if (!dayId || typeof dayId !== "number") {
-      return NextResponse.json({ error: "dayId invalide" }, { status: 400 });
+    if (!pageSlug || typeof pageSlug !== "string") {
+      return NextResponse.json({ error: "pageSlug invalide" }, { status: 400 });
     }
 
     const headersList = await headers();
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       "unknown";
 
     const result = await toggleLike(
-      dayId,
+      pageSlug,
       ip,
       headersList.get("user-agent") || undefined,
     );
@@ -33,10 +33,10 @@ export async function POST(request: Request) {
 // PUT pour ajouter un like
 export async function PUT(request: Request) {
   try {
-    const { dayId } = await request.json();
+    const { pageSlug } = await request.json();
 
-    if (!dayId || typeof dayId !== "number") {
-      return NextResponse.json({ error: "dayId invalide" }, { status: 400 });
+    if (!pageSlug || typeof pageSlug !== "string") {
+      return NextResponse.json({ error: "pageSlug invalide" }, { status: 400 });
     }
 
     const headersList = await headers();
@@ -46,7 +46,7 @@ export async function PUT(request: Request) {
       "unknown";
 
     const result = await addLike(
-      dayId,
+      pageSlug,
       ip,
       headersList.get("user-agent") || undefined,
     );
@@ -62,10 +62,10 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const dayId = parseInt(searchParams.get("dayId") || "0");
+    const pageSlug = searchParams.get("pageSlug");
 
-    if (!dayId) {
-      return NextResponse.json({ error: "dayId requis" }, { status: 400 });
+    if (!pageSlug) {
+      return NextResponse.json({ error: "pageSlug requis" }, { status: 400 });
     }
 
     const headersList = await headers();
@@ -75,7 +75,7 @@ export async function DELETE(request: Request) {
       "unknown";
 
     const result = await removeLike(
-      dayId,
+      pageSlug,
       ip,
       headersList.get("user-agent") || undefined,
     );
@@ -91,10 +91,10 @@ export async function DELETE(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const dayId = parseInt(searchParams.get("dayId") || "0");
+    const pageSlug = searchParams.get("pageSlug");
 
-    if (!dayId) {
-      return NextResponse.json({ error: "dayId requis" }, { status: 400 });
+    if (!pageSlug) {
+      return NextResponse.json({ error: "pageSlug requis" }, { status: 400 });
     }
 
     // Récupérer IP
@@ -104,7 +104,7 @@ export async function GET(request: Request) {
       headersList.get("x-real-ip") ||
       "unknown";
 
-    const result = await getLikesForDay(dayId, ip);
+    const result = await getLikesForPage(pageSlug, ip);
 
     return NextResponse.json(result);
   } catch (error) {

@@ -8,7 +8,7 @@ export type PageType = "avant-propos" | "jour" | "postface";
 // Entité: Day
 export class Day {
   private constructor(
-    public readonly id: number,
+    public readonly slug: string,
     public readonly type: PageType,
     public readonly day: number | null,
     public readonly date: Date | null,
@@ -23,7 +23,7 @@ export class Day {
   ) {}
 
   static create(params: {
-    id: number;
+    slug: string;
     type: PageType;
     day?: number | null;
     date?: Date | null;
@@ -37,7 +37,7 @@ export class Day {
     fromMemory?: boolean;
   }): Day {
     return new Day(
-      params.id,
+      params.slug,
       params.type,
       params.day ?? null,
       params.date ?? null,
@@ -54,7 +54,7 @@ export class Day {
 
   static fromPlain(data: any): Day {
     return Day.create({
-      id: data.id,
+      slug: data.slug,
       type: data.type,
       day: data.day,
       date: data.date ? new Date(data.date) : null,
@@ -111,9 +111,7 @@ export class Day {
   }
 
   getSlug(): string {
-    if (this.isAvantPropos()) return "avant-propos";
-    if (this.isPostface()) return "postface";
-    return `jour-${this.day}`;
+    return this.slug;
   }
 
   private getFrom(): string {
@@ -139,20 +137,29 @@ export class Day {
   }
 
   getTitle(): string {
+    // Pour les pages non-jour, utiliser le titre ou le slug
     if (!this.isJour()) {
-      return this.title ?? (this.isAvantPropos() ? "Avant-propos" : "Postface");
+      return this.title ?? this.slug;
     }
 
+    // Pour les jours, afficher le trajet
     return this.getFromTo();
   }
 
   getLabel(): string {
+    // Pour les pages non-jour (avant-propos, postface, etc.)
     if (!this.isJour()) {
-      return this.getTitle();
+      return this.title ?? this.slug;
     }
 
-    const fromTo = this.getFromTo();
-    return `Jour ${this.day} — ${fromTo}`;
+    // Pour les jours
+    if (this.day !== null) {
+      const fromTo = this.getFromTo();
+      return `Jour ${this.day} — ${fromTo}`;
+    }
+
+    // Fallback si pas de numéro de jour
+    return this.getFromTo();
   }
 
   getFormattedDate(locale: string = "fr-FR"): string | null {

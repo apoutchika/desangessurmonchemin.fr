@@ -71,12 +71,10 @@ export function DayPage({ day: serializedDay, nav }: Props) {
           <div className="day-header__divider" />
         </header>
 
-        {/* Bouton like (jours uniquement) */}
-        {isJour && day.day && (
-          <div className="day-like-wrapper">
-            <DayLike dayId={day.day} />
-          </div>
-        )}
+        {/* Bouton like (toutes les pages) */}
+        <div className="day-like-wrapper">
+          <DayLike pageSlug={day.slug} />
+        </div>
 
         {/* Stats complètes tablette/mobile (768px - 1199px) */}
         {!isDesktop && isJour && hasStatsOrMap && (

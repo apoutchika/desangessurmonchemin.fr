@@ -460,8 +460,10 @@ function DonPageContent() {
             Soutenir ce projet
           </h1>
           <p className="simple-page__subtitle" style={{ textAlign: "left" }}>
-            Ce récit est proposé en prix libre. Chacun peut le lire selon ses
-            moyens, et ceux qui le souhaitent peuvent contribuer à sa valeur.
+            Ce livre est proposé en prix libre : chacun est libre de choisir le
+            montant qui lui semble juste. Si vous avez terminé la lecture et que
+            ce récit vous a touché, accompagné ou inspiré, votre contribution
+            est une belle façon de soutenir ce travail.
           </p>
 
           <div
@@ -478,13 +480,11 @@ function DonPageContent() {
             }}
           >
             <p style={{ marginBottom: "1rem" }}>
-              Écrire ce livre a demandé des centaines d'heures de travail :
-              marcher, photographier, écrire, relire, coder ce site. Si vous
-              avez terminé la lecture et que ce récit vous a touché, accompagné
-              ou inspiré, votre soutien permet de continuer à créer et partager.
+              Écrire ce livre a demandé des centaines d’heures de travail :
+              marcher, écrire, relire, développer le site web.
             </p>
             <p style={{ margin: 0 }}>
-              Chaque contribution, quelle que soit sa forme, est reçue avec
+              Chaque contribution, quelle qu’elle soit, est reçue avec
               gratitude.
             </p>
           </div>
@@ -794,8 +794,7 @@ function DonPageContent() {
                 }}
               >
                 Envoyez le montant de votre choix directement à l'une des
-                adresses ci-dessous. Chaque transaction, aussi petite soit-elle,
-                est reçue avec gratitude.
+                adresses ci-dessous.
               </p>
 
               <div

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useLikes } from "@/hooks/useLikes";
 
 interface Props {
-  dayId: number;
+  pageSlug: string;
 }
 
 interface Particle {
@@ -15,8 +15,8 @@ interface Particle {
   delay: number;
 }
 
-export function DayLike({ dayId }: Props) {
-  const { count, liked, isLoading, toggleLike } = useLikes(dayId);
+export function DayLike({ pageSlug }: Props) {
+  const { count, liked, isLoading, toggleLike } = useLikes(pageSlug);
   const [animating, setAnimating] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [showTears, setShowTears] = useState(false);
@@ -64,7 +64,7 @@ export function DayLike({ dayId }: Props) {
       // Tracker dans GA
       if (typeof window !== "undefined") {
         const { trackLike } = await import("@/lib/analytics");
-        trackLike(dayId, result.action);
+        trackLike(pageSlug, result.action);
       }
     }
   };

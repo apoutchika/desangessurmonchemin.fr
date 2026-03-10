@@ -140,6 +140,18 @@ main {
   max-width: 200px;
 }
 
+.prose ul {
+  list-style-type: disc;
+  padding-left: 2em;
+  line-height: 1.5;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.prose ul li {
+  margin-bottom: 0.5em;
+}
+
 /* ---- Liens ---- */
 a {
   color: inherit;
@@ -948,6 +960,46 @@ a:hover {
   line-height: 1.7;
 }
 
+/* Listes à puces dans les pages simples */
+.simple-page ul {
+  list-style: disc;
+  margin-left: 2rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.simple-page ul li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.simple-page ol {
+  list-style: decimal;
+  margin-left: 2rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.simple-page ol li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+/* Liens dans le contenu des pages simples */
+.simple-page a:not(.btn):not(.link-underline) {
+  color: var(--forest);
+  text-decoration: none;
+  border-bottom: 1px solid var(--forest);
+  transition: all 0.2s ease;
+  padding-bottom: 1px;
+}
+
+.simple-page a:not(.btn):not(.link-underline):hover {
+  color: var(--warm);
+  border-bottom-color: var(--warm);
+  background: rgba(var(--warm-rgb), 0.05);
+}
+
 .download-options {
   display: flex;
   flex-direction: column;
@@ -996,6 +1048,24 @@ a:hover {
   font-size: 0.8125rem;
   color: var(--muted);
   margin-top: 0.125rem;
+}
+
+/* Responsive : cacher la flèche sur mobile */
+@media (max-width: 640px) {
+  .download-card .btn-outline::after {
+    content: none;
+  }
+
+  .download-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .download-card .btn-outline {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* ---- Don / stripe-like ---- */
@@ -1399,7 +1469,8 @@ select:disabled {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

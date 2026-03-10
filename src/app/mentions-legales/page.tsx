@@ -139,11 +139,33 @@ export default function MentionsLegalesPage() {
             marginTop: '2.5rem',
             marginBottom: '1rem'
           }}>
-            8. Droit applicable
+            9. Licence du livre
           </h2>
           <p>
-            Les présentes mentions légales sont régies par le droit français. 
-            En cas de litige, les tribunaux français seront seuls compétents.
+            Le livre "Des anges sur mon chemin — Un printemps vers Santiago" est publié sous licence{' '}
+            <strong>Creative Commons BY-NC-ND 4.0</strong> (Attribution - Pas d'Utilisation Commerciale - Pas de Modification).
+          </p>
+          <p>
+            <strong>Vous êtes libre de :</strong>
+          </p>
+          <ul>
+            <li>Télécharger et lire ce livre</li>
+            <li>Partager et redistribuer ce livre dans son format original</li>
+          </ul>
+          <p>
+            <strong>Selon les conditions suivantes :</strong>
+          </p>
+          <ul>
+            <li><strong>Attribution</strong> : Vous devez créditer l'œuvre et indiquer l'auteur (Julien Philippon)</li>
+            <li><strong>Pas d'utilisation commerciale</strong> : Vous ne pouvez pas utiliser ce livre à des fins commerciales</li>
+            <li><strong>Pas de modification</strong> : Vous ne pouvez pas modifier, transformer ou créer à partir de ce livre</li>
+          </ul>
+          <p>
+            Les photographies, cartes et contenus présents dans ce livre sont également protégés par cette licence.
+          </p>
+          <p>
+            Pour toute demande d'utilisation particulière ou de droits étendus, merci de nous contacter via le{' '}
+            <a href="/contact" className="link-underline">formulaire de contact</a>.
           </p>
 
           <h2 style={{ 
@@ -154,7 +176,7 @@ export default function MentionsLegalesPage() {
             marginTop: '2.5rem',
             marginBottom: '1rem'
           }}>
-            9. Crédits
+            10. Crédits
           </h2>
           <p>
             Conception, développement et rédaction : Julien Philippon
@@ -164,6 +186,21 @@ export default function MentionsLegalesPage() {
           </p>
           <p>
             Typographies : EB Garamond (Google Fonts), Jost (Google Fonts)
+          </p>
+
+          <h2 style={{ 
+            fontFamily: 'var(--font-serif)', 
+            fontSize: '1.5rem', 
+            fontWeight: 600,
+            color: 'var(--ink)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem'
+          }}>
+            11. Droit applicable
+          </h2>
+          <p>
+            Les présentes mentions légales sont régies par le droit français. 
+            En cas de litige, les tribunaux français seront seuls compétents.
           </p>
         </div>
       </div>

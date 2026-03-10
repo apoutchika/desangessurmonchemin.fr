@@ -35,17 +35,17 @@ export async function initDatabase() {
     CREATE TABLE IF NOT EXISTS likes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
-      day_id INTEGER NOT NULL,
+      page_slug TEXT NOT NULL,
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id),
-      UNIQUE(day_id, user_id)
+      UNIQUE(page_slug, user_id)
     )
   `);
 
   // Créer les index
   await db.execute('CREATE INDEX IF NOT EXISTS idx_users_ip_hash ON users(ip_hash)');
   await db.execute('CREATE INDEX IF NOT EXISTS idx_downloads_user_format ON downloads(user_id, format)');
-  await db.execute('CREATE INDEX IF NOT EXISTS idx_likes_day ON likes(day_id)');
+  await db.execute('CREATE INDEX IF NOT EXISTS idx_likes_page ON likes(page_slug)');
   await db.execute('CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id)');
 }
 
@@ -133,113 +133,113 @@ export async function getDownloadStats() {
   return stats;
 }
 
-export async function addLike(dayId: number, ip: string, userAgent?: string): Promise<{ count: number }> {
+export async function addLike(pageSlug: string, ip: string, userAgent?: string): Promise<{ count: number }> {
   const userId = await getOrCreateUser(ip, userAgent);
   const ipHash = hashIP(ip);
 
   // Vérifier si déjà liké
   const existing = await db.execute({
-    sql: 'SELECT id FROM likes WHERE day_id = ? AND user_id = ?',
-    args: [dayId, userId],
+    sql: 'SELECT id FROM likes WHERE page_slug = ? AND user_id = ?',
+    args: [pageSlug, userId],
   });
 
   if (existing.rows.length === 0) {
     // Ajouter le like
     await db.execute({
-      sql: 'INSERT INTO likes (day_id, user_id) VALUES (?, ?)',
-      args: [dayId, userId],
+      sql: 'INSERT INTO likes (page_slug, user_id) VALUES (?, ?)',
+      args: [pageSlug, userId],
     });
 
     // Invalider le cache
-    cache.invalidateLikes(dayId);
-    cache.addUserLike(ipHash, dayId);
+    cache.invalidateLikes(pageSlug);
+    cache.addUserLike(ipHash, pageSlug);
   }
 
   // Retourner le nouveau count (depuis le cache ou DB)
-  let count = cache.getLikesCount(dayId);
+  let count = cache.getLikesCount(pageSlug);
   if (count === null) {
     const result = await db.execute({
-      sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
-      args: [dayId],
+      sql: 'SELECT COUNT(*) as count FROM likes WHERE page_slug = ?',
+      args: [pageSlug],
     });
     count = (result.rows[0].count as number) || 0;
-    cache.setLikesCount(dayId, count);
+    cache.setLikesCount(pageSlug, count);
   }
 
   return { count };
 }
 
-export async function removeLike(dayId: number, ip: string, userAgent?: string): Promise<{ count: number }> {
+export async function removeLike(pageSlug: string, ip: string, userAgent?: string): Promise<{ count: number }> {
   const userId = await getOrCreateUser(ip, userAgent);
   const ipHash = hashIP(ip);
 
   // Retirer le like
   await db.execute({
-    sql: 'DELETE FROM likes WHERE day_id = ? AND user_id = ?',
-    args: [dayId, userId],
+    sql: 'DELETE FROM likes WHERE page_slug = ? AND user_id = ?',
+    args: [pageSlug, userId],
   });
 
   // Invalider le cache
-  cache.invalidateLikes(dayId);
-  cache.removeUserLike(ipHash, dayId);
+  cache.invalidateLikes(pageSlug);
+  cache.removeUserLike(ipHash, pageSlug);
 
   // Retourner le nouveau count (depuis le cache ou DB)
-  let count = cache.getLikesCount(dayId);
+  let count = cache.getLikesCount(pageSlug);
   if (count === null) {
     const result = await db.execute({
-      sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
-      args: [dayId],
+      sql: 'SELECT COUNT(*) as count FROM likes WHERE page_slug = ?',
+      args: [pageSlug],
     });
     count = (result.rows[0].count as number) || 0;
-    cache.setLikesCount(dayId, count);
+    cache.setLikesCount(pageSlug, count);
   }
 
   return { count };
 }
 
-export async function toggleLike(dayId: number, ip: string, userAgent?: string): Promise<{ liked: boolean; count: number }> {
+export async function toggleLike(pageSlug: string, ip: string, userAgent?: string): Promise<{ liked: boolean; count: number }> {
   const userId = await getOrCreateUser(ip, userAgent);
 
   // Vérifier si déjà liké
   const existing = await db.execute({
-    sql: 'SELECT id FROM likes WHERE day_id = ? AND user_id = ?',
-    args: [dayId, userId],
+    sql: 'SELECT id FROM likes WHERE page_slug = ? AND user_id = ?',
+    args: [pageSlug, userId],
   });
 
   if (existing.rows.length > 0) {
     // Retirer le like
     await db.execute({
-      sql: 'DELETE FROM likes WHERE day_id = ? AND user_id = ?',
-      args: [dayId, userId],
+      sql: 'DELETE FROM likes WHERE page_slug = ? AND user_id = ?',
+      args: [pageSlug, userId],
     });
   } else {
     // Ajouter le like
     await db.execute({
-      sql: 'INSERT INTO likes (day_id, user_id) VALUES (?, ?)',
-      args: [dayId, userId],
+      sql: 'INSERT INTO likes (page_slug, user_id) VALUES (?, ?)',
+      args: [pageSlug, userId],
     });
   }
 
   // Retourner le nouveau statut
   const count = await db.execute({
-    sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
-    args: [dayId],
+    sql: 'SELECT COUNT(*) as count FROM likes WHERE page_slug = ?',
+    args: [pageSlug],
   });
   const liked = existing.rows.length === 0;
 
   return { liked, count: (count.rows[0].count as number) || 0 };
 }
 
-export async function getLikesForDay(dayId: number, ip?: string) {
+export async function getLikesForPage(pageSlug: string, ip?: string) {
   // Vérifier le cache pour le count
-  let count = cache.getLikesCount(dayId);
+  let count = cache.getLikesCount(pageSlug);
   if (count === null) {
     const result = await db.execute({
-      sql: 'SELECT COUNT(*) as count FROM likes WHERE day_id = ?',
-      args: [dayId],
+      sql: 'SELECT COUNT(*) as count FROM likes WHERE page_slug = ?',
+      args: [pageSlug],
     });
     count = (result.rows[0].count as number) || 0;
-    cache.setLikesCount(dayId, count);
+    cache.setLikesCount(pageSlug, count);
   }
   
   let liked = false;
@@ -249,7 +249,7 @@ export async function getLikesForDay(dayId: number, ip?: string) {
     // Vérifier le cache utilisateur
     const userLikes = cache.getUserLikes(ipHash);
     if (userLikes) {
-      liked = userLikes.has(dayId);
+      liked = userLikes.has(pageSlug);
     } else {
       // Sinon, requête DB
       const user = await db.execute({
@@ -260,8 +260,8 @@ export async function getLikesForDay(dayId: number, ip?: string) {
       if (user.rows.length > 0) {
         const userId = user.rows[0].id as number;
         const existing = await db.execute({
-          sql: 'SELECT id FROM likes WHERE day_id = ? AND user_id = ?',
-          args: [dayId, userId],
+          sql: 'SELECT id FROM likes WHERE page_slug = ? AND user_id = ?',
+          args: [pageSlug, userId],
         });
         liked = existing.rows.length > 0;
       }

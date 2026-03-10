@@ -25,12 +25,12 @@ export function LivreSidebar({ isOpen, onToggle }: Props) {
   // Empêcher le scroll du body quand la sidebar est ouverte sur mobile
   useEffect(() => {
     if (isOpen && window.innerWidth < 1500) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -39,57 +39,60 @@ export function LivreSidebar({ isOpen, onToggle }: Props) {
       {/* Bouton toggle avec SVG vague organique */}
       <button
         onClick={onToggle}
-        className={`livre-sidebar__toggle ${isOpen ? 'livre-sidebar__toggle--open' : ''}`}
+        className={`livre-sidebar__toggle ${isOpen ? "livre-sidebar__toggle--open" : ""}`}
         aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
         title={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
       >
-        <svg 
-          width="60" 
-          height="180" 
-          viewBox="0 0 60 180" 
-          fill="none" 
+        <svg
+          width="60"
+          height="180"
+          viewBox="0 0 60 180"
+          fill="none"
           xmlns="http://www.w3.org/2000/svg"
           style={{
-            position: 'absolute',
+            position: "absolute",
             left: 0,
             top: 0,
-            width: '100%',
-            height: '100%',
+            width: "100%",
+            height: "100%",
           }}
         >
           <defs>
-            <filter id="shadow" x="0" y="0" width="70" height="190" filterUnits="userSpaceOnUse">
-              <feGaussianBlur stdDeviation="3" in="SourceAlpha"/>
-              <feOffset dx="2" dy="0"/>
+            <filter
+              id="shadow"
+              x="0"
+              y="0"
+              width="70"
+              height="190"
+              filterUnits="userSpaceOnUse"
+            >
+              <feGaussianBlur stdDeviation="3" in="SourceAlpha" />
+              <feOffset dx="2" dy="0" />
               <feComponentTransfer>
-                <feFuncA type="linear" slope="0.15"/>
+                <feFuncA type="linear" slope="0.15" />
               </feComponentTransfer>
               <feMerge>
-                <feMergeNode/>
-                <feMergeNode in="SourceGraphic"/>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
           </defs>
           <g filter="url(#shadow)">
-            <path 
-              d="M 0,0 C 0,45 55,45 55,90 C 55,135 0,135 0,180 L 0,0 Z" 
+            <path
+              d="M 0,0 C 0,45 55,45 55,90 C 55,135 0,135 0,180 L 0,0 Z"
               fill="#5a7a5f"
             />
           </g>
           {/* Flèche stylée qui change de sens */}
           <g
             style={{
-              transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-              transformOrigin: '30px 90px',
-              transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+              transformOrigin: "30px 90px",
+              transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
             {/* Flèche simple et élégante */}
-            <path
-              d="M 36 90 L 24 84 L 24 96 Z"
-              fill="#f5f0e8"
-              opacity="0.9"
-            />
+            <path d="M 36 90 L 24 84 L 24 96 Z" fill="#f5f0e8" opacity="0.9" />
           </g>
         </svg>
       </button>
@@ -101,9 +104,7 @@ export function LivreSidebar({ isOpen, onToggle }: Props) {
         aria-hidden="true"
       />
 
-      <aside
-        className={`livre-sidebar ${isOpen ? "livre-sidebar--open" : ""}`}
-      >
+      <aside className={`livre-sidebar ${isOpen ? "livre-sidebar--open" : ""}`}>
         <div className="livre-sidebar__title">Table des matières</div>
 
         {days.map((day) => {
@@ -112,14 +113,7 @@ export function LivreSidebar({ isOpen, onToggle }: Props) {
           const isActive = pathname === href;
           const isSpecial = !day.isJour();
 
-          let label: string;
-          if (day.isAvantPropos()) {
-            label = day.title ?? "Avant-propos";
-          } else if (day.isPostface()) {
-            label = day.title ?? "Postface";
-          } else {
-            label = `Jour ${day.day}`;
-          }
+          const label = day.title;
 
           let city = "";
           if (day.isJour() && (day.from || day.to)) {
@@ -128,8 +122,9 @@ export function LivreSidebar({ isOpen, onToggle }: Props) {
 
           return (
             <Link
-              key={day.id}
+              key={day.slug}
               href={href}
+              title={(isSpecial ? label : day.getLabel()) ?? undefined}
               className={[
                 "livre-sidebar__item",
                 isActive && "livre-sidebar__item--active",
@@ -137,7 +132,6 @@ export function LivreSidebar({ isOpen, onToggle }: Props) {
               ]
                 .filter(Boolean)
                 .join(" ")}
-              title={isSpecial ? label : day.getLabel()}
             >
               {label}
               {day.isJour() && city && (

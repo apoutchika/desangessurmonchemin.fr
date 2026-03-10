@@ -1,8 +1,8 @@
 import { Day } from "../entities/Day";
 
 export interface PageNavigation {
-  prev?: { id: number; slug: string; label: string };
-  next?: { id: number; slug: string; label: string };
+  prev?: { slug: string; label: string };
+  next?: { slug: string; label: string };
 }
 
 export interface JourneyStats {
@@ -17,7 +17,10 @@ export interface JourneyStats {
 
 // Aggregate Root: Journey
 export class Journey {
-  private constructor(private readonly days: Day[]) {}
+  private index: Map<string, Day>;
+  private constructor(private readonly days: Day[]) {
+    this.index = new Map(days.map((d) => [d.slug, d]));
+  }
 
   static create(days: Day[]): Journey {
     return new Journey(days);
@@ -32,33 +35,18 @@ export class Journey {
     return [...this.days];
   }
 
-  getDayBySlug(slug: string): Day | undefined {
-    if (slug === "avant-propos") {
-      return this.days.find((d) => d.isAvantPropos());
-    }
-    if (slug === "postface") {
-      return this.days.find((d) => d.isPostface());
-    }
-    const dayNumber = parseInt(slug.replace("jour-", ""), 10);
-    return this.days.find((d) => d.day === dayNumber);
-  }
-
-  getDayById(id: number): Day | undefined {
-    return this.days.find((d) => d.id === id);
+  getDayBySlug(slug: string): Day | null {
+    return this.index.get(slug) ?? null;
   }
 
   getNavigation(currentDay: Day): PageNavigation {
-    const idx = this.days.findIndex((d) => d.id === currentDay.id);
+    const idx = this.days.indexOf(currentDay);
     const prev = idx > 0 ? this.days[idx - 1] : undefined;
     const next = idx < this.days.length - 1 ? this.days[idx + 1] : undefined;
 
     return {
-      prev: prev
-        ? { id: prev.id, slug: prev.getSlug(), label: prev.getLabel() }
-        : undefined,
-      next: next
-        ? { id: next.id, slug: next.getSlug(), label: next.getLabel() }
-        : undefined,
+      prev: prev ? { slug: prev.getSlug(), label: prev.getLabel() } : undefined,
+      next: next ? { slug: next.getSlug(), label: next.getLabel() } : undefined,
     };
   }
 
@@ -67,12 +55,12 @@ export class Journey {
 
     const totalDistance = journeyDays.reduce(
       (sum, d) => sum + (d.stats?.distance ?? 0),
-      0
+      0,
     );
 
     const totalElevationGain = journeyDays.reduce(
       (sum, d) => sum + (d.stats?.elevationGain ?? 0),
-      0
+      0,
     );
 
     return {

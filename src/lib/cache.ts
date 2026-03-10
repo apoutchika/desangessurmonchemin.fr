@@ -1,8 +1,8 @@
 import { LRUCache } from 'lru-cache';
 
-// Cache pour les likes par jour
-const likesCache = new LRUCache<number, { count: number; timestamp: number }>({
-  max: 500, // Max 500 jours en cache
+// Cache pour les likes par page (slug)
+const likesCache = new LRUCache<string, { count: number; timestamp: number }>({
+  max: 500, // Max 500 pages en cache
   ttl: 1000 * 60 * 5, // 5 minutes
   updateAgeOnGet: true,
 });
@@ -14,8 +14,8 @@ const downloadStatsCache = new LRUCache<string, { total: number; epub: number; p
   updateAgeOnGet: true,
 });
 
-// Cache pour l'état liked d'un utilisateur
-const userLikesCache = new LRUCache<string, Set<number>>({
+// Cache pour l'état liked d'un utilisateur (slug-based)
+const userLikesCache = new LRUCache<string, Set<string>>({
   max: 1000, // Max 1000 utilisateurs en cache
   ttl: 1000 * 60 * 10, // 10 minutes
   updateAgeOnGet: true,
@@ -23,41 +23,41 @@ const userLikesCache = new LRUCache<string, Set<number>>({
 
 export const cache = {
   // Likes
-  getLikesCount(dayId: number): number | null {
-    const cached = likesCache.get(dayId);
+  getLikesCount(pageSlug: string): number | null {
+    const cached = likesCache.get(pageSlug);
     if (cached) {
       return cached.count;
     }
     return null;
   },
 
-  setLikesCount(dayId: number, count: number): void {
-    likesCache.set(dayId, { count, timestamp: Date.now() });
+  setLikesCount(pageSlug: string, count: number): void {
+    likesCache.set(pageSlug, { count, timestamp: Date.now() });
   },
 
-  invalidateLikes(dayId: number): void {
-    likesCache.delete(dayId);
+  invalidateLikes(pageSlug: string): void {
+    likesCache.delete(pageSlug);
   },
 
   // User likes (pour savoir si un user a liké)
-  getUserLikes(ipHash: string): Set<number> | null {
+  getUserLikes(ipHash: string): Set<string> | null {
     return userLikesCache.get(ipHash) || null;
   },
 
-  setUserLikes(ipHash: string, dayIds: Set<number>): void {
-    userLikesCache.set(ipHash, dayIds);
+  setUserLikes(ipHash: string, pageSlugs: Set<string>): void {
+    userLikesCache.set(ipHash, pageSlugs);
   },
 
-  addUserLike(ipHash: string, dayId: number): void {
-    const likes = userLikesCache.get(ipHash) || new Set<number>();
-    likes.add(dayId);
+  addUserLike(ipHash: string, pageSlug: string): void {
+    const likes = userLikesCache.get(ipHash) || new Set<string>();
+    likes.add(pageSlug);
     userLikesCache.set(ipHash, likes);
   },
 
-  removeUserLike(ipHash: string, dayId: number): void {
+  removeUserLike(ipHash: string, pageSlug: string): void {
     const likes = userLikesCache.get(ipHash);
     if (likes) {
-      likes.delete(dayId);
+      likes.delete(pageSlug);
       userLikesCache.set(ipHash, likes);
     }
   },

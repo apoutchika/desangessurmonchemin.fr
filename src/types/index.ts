@@ -31,10 +31,10 @@ export interface Photo {
   height?: number;
 }
 
-export type PageType = "avant-propos" | "jour" | "postface";
+export type PageType = "jour" | "other";
 
 export interface JourneyDay {
-  id: number; // Ordre absolu (0 = AP, 1..N = jours, N+1 = PF)
+  slug: string;
   type: PageType;
   day: number | null; // Numéro du jour de marche (1..N), absent pour AP/PF
   date: Date | null; // ISO date string "YYYY-MM-DD"

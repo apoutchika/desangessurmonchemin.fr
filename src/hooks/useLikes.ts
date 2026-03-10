@@ -9,8 +9,8 @@ interface LikesData {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export function useLikes(dayId: number) {
-  const key = `/api/likes?dayId=${dayId}`;
+export function useLikes(pageSlug: string) {
+  const key = `/api/likes?pageSlug=${encodeURIComponent(pageSlug)}`;
 
   const { data, error, isLoading } = useSWR<LikesData>(key, fetcher, {
     revalidateOnFocus: true,
@@ -33,7 +33,7 @@ export function useLikes(dayId: number) {
       const response = await fetch("/api/likes", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dayId }),
+        body: JSON.stringify({ pageSlug }),
       });
 
       if (!response.ok) throw new Error("Failed to add like");
@@ -64,7 +64,7 @@ export function useLikes(dayId: number) {
         false,
       );
 
-      const response = await fetch(`/api/likes?dayId=${dayId}`, {
+      const response = await fetch(`/api/likes?pageSlug=${encodeURIComponent(pageSlug)}`, {
         method: "DELETE",
       });
 
