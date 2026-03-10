@@ -24,7 +24,7 @@ export function useLikes(pageSlug: string) {
       mutate(
         key,
         (current: LikesData | undefined) => {
-          if (!current) return current;
+          if (!current) return { count: 1, liked: true };
           return { count: current.count + 1, liked: true };
         },
         false,
@@ -58,15 +58,18 @@ export function useLikes(pageSlug: string) {
       mutate(
         key,
         (current: LikesData | undefined) => {
-          if (!current) return current;
+          if (!current) return { count: 0, liked: false };
           return { count: Math.max(0, current.count - 1), liked: false };
         },
         false,
       );
 
-      const response = await fetch(`/api/likes?pageSlug=${encodeURIComponent(pageSlug)}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/likes?pageSlug=${encodeURIComponent(pageSlug)}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to remove like");
 

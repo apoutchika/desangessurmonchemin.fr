@@ -45,7 +45,7 @@ export interface SerializedGpxPoint {
 export type PageType = "avant-propos" | "jour" | "postface";
 
 export interface SerializedDay {
-  id: number;
+  slug: string;
   type: PageType;
   day: number | null;
   date: string | null; // ISO string
@@ -60,14 +60,14 @@ export interface SerializedDay {
 }
 
 export interface SerializedPageNavigation {
-  prev?: { id: number; slug: string; label: string };
-  next?: { id: number; slug: string; label: string };
+  prev?: { slug: string; label: string };
+  next?: { slug: string; label: string };
 }
 
 // Sérialisation : Day -> SerializedDay
 export function serializeDay(day: Day): SerializedDay {
   return {
-    id: day.id,
+    slug: day.slug,
     type: day.type,
     day: day.day,
     date: day.date ? day.date.toISOString() : null,
