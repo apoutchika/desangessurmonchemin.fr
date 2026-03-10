@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useLikes } from '@/hooks/useLikes';
+import { useState } from "react";
+import { useLikes } from "@/hooks/useLikes";
 
 interface Props {
   dayId: number;
@@ -20,6 +20,7 @@ export function DayLike({ dayId }: Props) {
   const [animating, setAnimating] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [showTears, setShowTears] = useState(false);
+  const [isPending, setIsPending] = useState(false);
 
   const createParticles = (isLike: boolean) => {
     if (isLike) {
@@ -32,7 +33,7 @@ export function DayLike({ dayId }: Props) {
         delay: i * 0.05, // Décalage de 50ms entre chaque
       }));
       setParticles(newParticles);
-      
+
       // Nettoyer après l'animation
       setTimeout(() => setParticles([]), 1500);
     } else {
@@ -43,28 +44,27 @@ export function DayLike({ dayId }: Props) {
   };
 
   const handleLike = async () => {
-    if (isLoading) return;
+    if (isLoading || isPending) return;
 
-    const wasLiked = liked;
-    
+    // Déclencher l'animation IMMÉDIATEMENT
+    setIsPending(true);
     setAnimating(true);
+    
+    // Créer les particules immédiatement (optimistic)
+    const willBeLiked = !liked;
+    createParticles(willBeLiked);
+
     setTimeout(() => setAnimating(false), 600);
 
+    // Puis faire l'appel API
     const result = await toggleLike();
-    
+    setIsPending(false);
+
     if (result.success) {
       // Tracker dans GA
-      if (typeof window !== 'undefined') {
-        const { trackLike } = await import('@/lib/analytics');
+      if (typeof window !== "undefined") {
+        const { trackLike } = await import("@/lib/analytics");
         trackLike(dayId, result.action);
-      }
-      
-      // Créer les particules seulement pour nos propres actions
-      // Les autres utilisateurs verront juste le count changer
-      if (result.action === 'add') {
-        createParticles(true);
-      } else {
-        createParticles(false);
       }
     }
   };
@@ -72,18 +72,19 @@ export function DayLike({ dayId }: Props) {
   if (isLoading) return null;
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: "relative" }}>
       <button
         onClick={handleLike}
-        className={`day-like ${liked ? 'day-like--liked' : ''} ${animating ? 'day-like--animating' : ''}`}
-        aria-label={liked ? 'Retirer le like' : 'Aimer cette journée'}
-        title={liked ? 'Retirer le like' : 'Aimer cette journée'}
+        className={`day-like ${liked ? "day-like--liked" : ""} ${animating ? "day-like--animating" : ""} ${isPending ? "day-like--pending" : ""}`}
+        aria-label={liked ? "Retirer le like" : "Aimer cette journée"}
+        title={liked ? "Retirer le like" : "Aimer cette journée"}
+        disabled={isPending}
       >
         <svg
           width="20"
           height="20"
           viewBox="0 0 24 24"
-          fill={liked ? 'currentColor' : 'none'}
+          fill={liked ? "currentColor" : "none"}
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
@@ -99,11 +100,13 @@ export function DayLike({ dayId }: Props) {
         <div
           key={particle.id}
           className="day-like-particle"
-          style={{
-            left: `calc(50% + ${particle.x}px)`,
-            animationDelay: `${particle.delay}s`,
-            '--rotation': `${particle.rotation}deg`,
-          } as React.CSSProperties}
+          style={
+            {
+              left: `calc(50% + ${particle.x}px)`,
+              animationDelay: `${particle.delay}s`,
+              "--rotation": `${particle.rotation}deg`,
+            } as React.CSSProperties
+          }
         >
           ❤️
         </div>
@@ -112,9 +115,24 @@ export function DayLike({ dayId }: Props) {
       {/* Larmes qui tombent (seulement quand c'est nous qui enlevons) */}
       {showTears && (
         <>
-          <div className="day-like-tear" style={{ left: '30%', animationDelay: '0s' }}>💧</div>
-          <div className="day-like-tear" style={{ left: '50%', animationDelay: '0.1s' }}>💧</div>
-          <div className="day-like-tear" style={{ left: '70%', animationDelay: '0.2s' }}>💧</div>
+          <div
+            className="day-like-tear"
+            style={{ left: "30%", animationDelay: "0s" }}
+          >
+            💧
+          </div>
+          <div
+            className="day-like-tear"
+            style={{ left: "50%", animationDelay: "0.1s" }}
+          >
+            💧
+          </div>
+          <div
+            className="day-like-tear"
+            style={{ left: "70%", animationDelay: "0.2s" }}
+          >
+            💧
+          </div>
         </>
       )}
     </div>

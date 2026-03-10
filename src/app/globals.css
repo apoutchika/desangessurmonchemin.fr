@@ -1389,6 +1389,24 @@ select:disabled {
   animation: heartbeat 0.6s var(--ease);
 }
 
+.day-like--pending {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.day-like--pending svg {
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
 .day-like svg {
   width: 20px;
   height: 20px;
