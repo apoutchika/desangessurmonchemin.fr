@@ -906,7 +906,12 @@ a:hover {
 
 .simple-page__inner {
   max-width: 560px;
-  text-align: center;
+  text-align: left;
+  width: 100%;
+}
+
+.simple-page__inner p {
+  max-width: 560px;
   width: 100%;
 }
 
@@ -961,11 +966,17 @@ a:hover {
 }
 
 /* Listes à puces dans les pages simples */
+.simple-page p {
+  margin-bottom: 1rem;
+}
+
 .simple-page ul {
   list-style: disc;
   margin-left: 2rem;
   margin-bottom: 1.5rem;
-  line-height: 1.8;
+  padding-left: 2rem;
+  line-height: 1.2;
+  text-align: left;
 }
 
 .simple-page ul li {
