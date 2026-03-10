@@ -1,0 +1,8 @@
+# Robots.txt - Préprod (bloque l'indexation)
+# À MODIFIER EN PRODUCTION pour autoriser l'indexation
+
+User-agent: *
+Disallow: /
+
+# Sitemap (à décommenter en production)
+# Sitemap: https://votredomaine.fr/sitemap.xml

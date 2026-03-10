@@ -23,6 +23,16 @@ export const metadata: Metadata = {
     locale: 'fr_FR',
     siteName: 'Des anges sur mon chemin',
   },
+  // Bloque l'indexation en préprod (à retirer en production)
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default function RootLayout({
