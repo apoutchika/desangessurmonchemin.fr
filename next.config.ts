@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["86.75.87.207"],
   images: {
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "s3.desangessurmonchemin.fr" },
     ],
@@ -10,8 +11,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/soutenir',
-        destination: '/don',
+        source: "/soutenir",
+        destination: "/don",
         permanent: true,
       },
     ];
