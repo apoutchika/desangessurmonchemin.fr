@@ -1,6 +1,10 @@
 import { MetadataRoute } from "next";
 import { getJourney } from "@/data/journey";
 
+const getUrl = (path: string) => {
+  return new URL(path, process.env.NEXT_PUBLIC_SITE_URL).href;
+};
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://votredomaine.fr";
   const journey = getJourney();
@@ -15,44 +19,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${baseUrl}/livre`,
+      url: getUrl(`/livre`),
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/telechargement`,
+      url: getUrl(`/telechargement`),
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/don`,
+      url: getUrl(`/don`),
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/contact`,
+      url: getUrl(`/contact`),
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
-      url: `${baseUrl}/mentions-legales`,
+      url: getUrl(`/mentions-legales`),
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/confidentialite`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-
-    {
-      url: `${baseUrl}/confidentialite`,
+      url: getUrl(`/confidentialite`),
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
@@ -61,7 +58,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Pages dynamiques (jours du livre)
   const dayPages: MetadataRoute.Sitemap = days.map((day) => ({
-    url: `${baseUrl}/livre/${day.getSlug()}`,
+    url: getUrl(`/livre/${day.getSlug()}`),
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.8,
