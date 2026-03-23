@@ -1,8 +1,4 @@
-# Robots.txt - Préprod (bloque l'indexation)
-# À MODIFIER EN PRODUCTION pour autoriser l'indexation
-
 User-agent: *
-Disallow: /
+Allow: /
 
-# Sitemap (à décommenter en production)
-# Sitemap: https://votredomaine.fr/sitemap.xml
+Sitemap: https://www.desangessurmonchemin.fr/sitemap.xml
