@@ -4,7 +4,8 @@ node_modules
 data/
 
 # Fichiers téléchargeables (ne pas commiter les gros fichiers)
-private/downloads/*.epub
-private/downloads/*.pdf
+# private/downloads/*.epub
+# private/downloads/*.pdf
+
 # Mais garder le dossier
 !private/downloads/.gitkeep
