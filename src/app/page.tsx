@@ -33,7 +33,7 @@ export default function HomePage() {
                   textAlign: "center",
                 }}
               >
-                De Lyon à Compostelle, 1 814 kilomètres seul mais jamais
+                De Lyon à Compostelle, 1 815 kilomètres seul mais jamais
                 vraiment.
                 <br />
                 Le récit d'une aventure humaine portée par les rencontres du
