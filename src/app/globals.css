@@ -1479,6 +1479,17 @@ select:disabled {
   animation: pulse 0.8s ease-in-out infinite;
 }
 
+.avant-propos .day-like-wrapper,
+.journal .day-like-wrapper,
+.postface .day-like-wrapper,
+.remerciement .day-like-wrapper,
+.soutenir-ce-projet .day-like-wrapper,
+.droits-dauteur-et-licence .day-like-wrapper {
+  height: 10px;
+  position: relative;
+  top: -15px;
+}
+
 @keyframes pulse {
   0%,
   100% {

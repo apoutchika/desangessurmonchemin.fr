@@ -19,7 +19,7 @@ export function DayGallery({ photos }: Props) {
     loop: false, // Pas de défilement infini
   });
   const galleryRef = useRef<HTMLDivElement>(null);
-  
+
   // État pour savoir si on peut naviguer
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
@@ -33,11 +33,11 @@ export function DayGallery({ photos }: Props) {
 
   useEffect(() => {
     if (!emblaApi) return;
-    
+
     onSelect();
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
-    
+
     return () => {
       emblaApi.off("select", onSelect);
       emblaApi.off("reInit", onSelect);
@@ -143,7 +143,7 @@ export function DayGallery({ photos }: Props) {
             onClick={scrollPrev}
             className="day-gallery-carousel__btn"
             aria-label="Précédent"
-            style={{ visibility: canScrollPrev ? 'visible' : 'hidden' }}
+            style={{ visibility: canScrollPrev ? "visible" : "hidden" }}
           >
             ‹
           </button>
@@ -151,7 +151,7 @@ export function DayGallery({ photos }: Props) {
             onClick={scrollNext}
             className="day-gallery-carousel__btn"
             aria-label="Suivant"
-            style={{ visibility: canScrollNext ? 'visible' : 'hidden' }}
+            style={{ visibility: canScrollNext ? "visible" : "hidden" }}
           >
             ›
           </button>

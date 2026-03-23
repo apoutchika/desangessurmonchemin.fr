@@ -49,7 +49,7 @@ export function DayPage({ day: serializedDay, nav }: Props) {
   const hasStatsOrMap = day.hasStats() || day.hasMap();
 
   return (
-    <div className="day-layout" translate="yes">
+    <div className={["day-layout", day.slug].join(" ")} translate="yes">
       {/* Contenu principal */}
       <article className="day-main">
         {/* En-tête */}
@@ -92,17 +92,17 @@ export function DayPage({ day: serializedDay, nav }: Props) {
         <ProseContent content={day.content} />
 
         {/* Lieu d'arrivée (après le texte) */}
-        {isJour && day.to && (
+        {day.to && (
           <div className="day-place-arrival">
-            <PlaceCard place={day.to} type="arrival" />
+            <PlaceCard
+              place={day.to}
+              type={day.slug === "avant-propos" ? "departure" : "arrival"}
+            />
           </div>
         )}
 
         {/* Galerie photos */}
         {day.hasPhotos() && <DayGallery photos={day.photos} />}
-
-        {/* CTA fin de livre (postface uniquement) */}
-        {day.isPostface() && <EndOfBookCTA />}
 
         {/* Navigation */}
         <nav className="day-nav" aria-label="Navigation entre les journées">
