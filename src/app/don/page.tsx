@@ -112,8 +112,9 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={copy}
+      aria-label={copied ? "Adresse copiée" : "Copier l'adresse"}
       style={{
-        background: "none",
+        background: copied ? "rgba(90, 122, 95, 0.1)" : "none",
         border: "none",
         cursor: "pointer",
         padding: "0.25rem 0.5rem",
@@ -121,7 +122,7 @@ function CopyButton({ text }: { text: string }) {
         fontSize: "0.75rem",
         fontFamily: "var(--font-sans)",
         color: copied ? "var(--forest)" : "var(--muted)",
-        transition: "color 0.2s",
+        transition: "all 0.2s",
         whiteSpace: "nowrap",
         flexShrink: 0,
       }}
@@ -233,6 +234,7 @@ function CryptoCard({ wallet }: { wallet: Wallet }) {
         }}
       >
         <code
+          aria-label={wallet.address}
           style={{
             fontSize: "0.6875rem",
             fontFamily: "monospace",
@@ -240,13 +242,17 @@ function CryptoCard({ wallet }: { wallet: Wallet }) {
             wordBreak: "break-all",
             flex: 1,
             lineHeight: 1.5,
+            userSelect: "all",
+            WebkitUserSelect: "all",
           }}
         >
-          <span style={{ color: wallet.color, fontWeight: 600 }}>
+          <span aria-hidden="true" style={{ color: wallet.color, fontWeight: 600 }}>
             {wallet.address.slice(0, 6)}
           </span>
-          {wallet.address.slice(6, -6)}
-          <span style={{ color: wallet.color, fontWeight: 600 }}>
+          <span aria-hidden="true">
+            {wallet.address.slice(6, -6)}
+          </span>
+          <span aria-hidden="true" style={{ color: wallet.color, fontWeight: 600 }}>
             {wallet.address.slice(-6)}
           </span>
         </code>
