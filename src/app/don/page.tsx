@@ -242,7 +242,13 @@ function CryptoCard({ wallet }: { wallet: Wallet }) {
             lineHeight: 1.5,
           }}
         >
-          {wallet.address}
+          <span style={{ color: wallet.color, fontWeight: 600 }}>
+            {wallet.address.slice(0, 6)}
+          </span>
+          {wallet.address.slice(6, -6)}
+          <span style={{ color: wallet.color, fontWeight: 600 }}>
+            {wallet.address.slice(-6)}
+          </span>
         </code>
         <CopyButton text={wallet.address} />
       </div>
