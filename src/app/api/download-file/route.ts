@@ -11,8 +11,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Format invalide" }, { status: 400 });
     }
 
+    // Lire la version du livre pour l'inclure dans le nom du fichier
+    let version = "";
+    try {
+      const versionPath = path.join(process.cwd(), "public", "book.version.json");
+      const versionData = JSON.parse(await readFile(versionPath, "utf-8"));
+      if (versionData.version) {
+        version = `-v${versionData.version}`;
+      }
+    } catch {
+      // Si le fichier est absent, on continue sans version
+    }
+
     // Chemin vers le fichier PRIVÉ (hors du dossier public)
-    // Les fichiers sont dans /private/downloads/ à la racine du projet
     const filePath = path.join(
       process.cwd(),
       "private",
@@ -29,14 +40,15 @@ export async function GET(request: Request) {
       "Content-Type",
       format === "epub" ? "application/epub+zip" : "application/pdf",
     );
+    // Le nom inclut la version → change à chaque mise à jour, invalide le cache navigateur
     headers.set(
       "Content-Disposition",
-      `attachment; filename="des-anges-sur-mon-chemin.${format}"`,
+      `attachment; filename="des-anges-sur-mon-chemin${version}.${format}"`,
     );
     headers.set("Content-Length", fileBuffer.length.toString());
 
-    // Headers de cache (optionnel - cache pendant 1 heure)
-    headers.set("Cache-Control", "private, max-age=3600");
+    // L'URL contient ?v= (cache-busting) → on peut cacher la réponse 24h
+    headers.set("Cache-Control", "private, max-age=86400");
 
     return new NextResponse(fileBuffer, {
       status: 200,
