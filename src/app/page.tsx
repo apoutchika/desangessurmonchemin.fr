@@ -126,30 +126,20 @@ export default function HomePage() {
               pour rejoindre Saint-Jacques-de-Compostelle.
             </p>
             <p>
-              Dans son sac à dos : un ordinateur portable, du matériel de magie
-              et le strict nécessaire. Dans son cœur : le deuil brutal de son
+              Dans son sac à dos : un ordinateur portable, du matériel de magie
+              et le strict nécessaire. Dans son cœur : le deuil brutal de son
               parrain, survenu quelques jours seulement avant le départ.
             </p>
             <p>
               À travers ce journal de bord, il partage, jour après jour, son
-              périple entre la France et l'Espagne : les efforts physiques, la
+              périple entre la France et l'Espagne : les efforts physiques, la
               traversée du deuil, ses tours de magie improvisés sur la route,
               ses introspections et les bonheurs simples du quotidien.
             </p>
-            <p
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontStyle: "italic",
-                color: "var(--ink)",
-                fontSize: "clamp(1rem, 1.5vw, 1.125rem)",
-                borderLeft: "3px solid var(--rust)",
-                paddingLeft: "1.25rem",
-                marginTop: "0.5rem",
-              }}
-            >
-              Au cœur de ce récit : toutes ces rencontres — ses «&nbsp;anges&nbsp;»
-              d'un instant — qui l'ont accompagné et aidé à tenir le chemin
-              tout au long de ses 1&nbsp;815&nbsp;km.
+            <p>
+              Au cœur de ce récit : toutes ces rencontres — ses « anges » d'un
+              instant — qui l'ont accompagné et aidé à tenir le chemin tout au
+              long de ses 1 815 km.
             </p>
           </div>
         </div>
