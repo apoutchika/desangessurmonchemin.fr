@@ -91,6 +91,70 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Résumé */}
+      <section
+        style={{
+          padding: "clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 3rem)",
+        }}
+      >
+        <div className="container" style={{ maxWidth: 680, margin: "0 auto" }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "clamp(1.5rem, 2.5vw, 2rem)",
+              fontWeight: 600,
+              color: "var(--ink)",
+              marginBottom: "2rem",
+              textAlign: "center",
+            }}
+          >
+            Le livre
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.25rem",
+              fontSize: "clamp(1rem, 1.5vw, 1.0625rem)",
+              color: "var(--stone)",
+              lineHeight: 1.8,
+            }}
+          >
+            <p>
+              Le 23 mars 2025, après de longs mois de travail intense sur un
+              important projet, Julien décide de quitter son appartement à Lyon
+              pour rejoindre Saint-Jacques-de-Compostelle.
+            </p>
+            <p>
+              Dans son sac à dos : un ordinateur portable, du matériel de magie
+              et le strict nécessaire. Dans son cœur : le deuil brutal de son
+              parrain, survenu quelques jours seulement avant le départ.
+            </p>
+            <p>
+              À travers ce journal de bord, il partage, jour après jour, son
+              périple entre la France et l'Espagne : les efforts physiques, la
+              traversée du deuil, ses tours de magie improvisés sur la route,
+              ses introspections et les bonheurs simples du quotidien.
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontStyle: "italic",
+                color: "var(--ink)",
+                fontSize: "clamp(1rem, 1.5vw, 1.125rem)",
+                borderLeft: "3px solid var(--rust)",
+                paddingLeft: "1.25rem",
+                marginTop: "0.5rem",
+              }}
+            >
+              Au cœur de ce récit : toutes ces rencontres — ses «&nbsp;anges&nbsp;»
+              d'un instant — qui l'ont accompagné et aidé à tenir le chemin
+              tout au long de ses 1&nbsp;815&nbsp;km.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="home-features">
         <div className="container">
