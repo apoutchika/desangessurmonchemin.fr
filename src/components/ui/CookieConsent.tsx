@@ -126,23 +126,15 @@ export function CookieConsent() {
 
 function loadGoogleAnalytics() {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
-  
-  if (!GA_ID) {
-    console.warn('Google Analytics ID not found');
-    return;
-  }
+
+  if (!GA_ID) return;
 
   // Vérifier si déjà chargé
-  if (window.gtag) {
-    console.log('Google Analytics already loaded');
-    return;
-  }
-
-  console.log('Loading Google Analytics:', GA_ID);
+  if (window.gtag) return;
 
   // Initialiser dataLayer AVANT de charger le script
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function() {
+  window.gtag = function () {
     window.dataLayer!.push(arguments);
   };
 
@@ -150,19 +142,18 @@ function loadGoogleAnalytics() {
   const script = document.createElement("script");
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
   script.async = true;
-  
+
   script.onload = () => {
-    console.log('Google Analytics script loaded');
     // Initialiser après le chargement
     window.gtag!("js", new Date());
     window.gtag!("config", GA_ID, {
       anonymize_ip: true,
-      cookie_flags: 'SameSite=None;Secure',
+      cookie_flags: "SameSite=None;Secure",
     });
   };
 
   script.onerror = () => {
-    console.error('Failed to load Google Analytics script');
+    console.error("Failed to load Google Analytics script");
   };
 
   document.head.appendChild(script);
