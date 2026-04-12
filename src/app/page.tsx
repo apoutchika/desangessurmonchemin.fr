@@ -121,9 +121,10 @@ export default function HomePage() {
             }}
           >
             <p>
-              Le 23 mars 2025, après de longs mois de travail intense sur un
-              important projet, Julien décide de quitter son appartement à Lyon
-              pour rejoindre Saint-Jacques-de-Compostelle.
+              Le 23 mars 2025, après avoir achevé un important projet
+              professionnel de plus de quinze mois de travail presque non-stop,
+              Julien décide de quitter son bureau pour rejoindre le chemin de
+              Saint-Jacques-de-Compostelle.
             </p>
             <p>
               Dans son sac à dos : un ordinateur portable, du matériel de magie
@@ -132,13 +133,13 @@ export default function HomePage() {
             </p>
             <p>
               À travers ce journal de bord, il partage, jour après jour, son
-              périple entre la France et l'Espagne : les efforts physiques, la
-              traversée du deuil, ses tours de magie improvisés sur la route,
-              ses introspections et les bonheurs simples du quotidien.
+              périple de France en Espagne : les efforts physiques, la traversée
+              du deuil, ses tours de magie improvisés sur la route, ses
+              introspections et les bonheurs simples du quotidien.
             </p>
             <p>
-              Au cœur de ce récit : toutes ces rencontres — ses « anges » d'un
-              instant — qui l'ont accompagné et aidé à tenir le chemin tout au
+              Au cœur de ce récit : toutes ces rencontres – ses « anges » d’un
+              instant – qui l’ont accompagné et aidé à tenir le chemin tout au
               long de ses 1 815 km.
             </p>
           </div>
