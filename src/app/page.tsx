@@ -94,7 +94,7 @@ export default function HomePage() {
       {/* Résumé */}
       <section
         style={{
-          padding: "clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 3rem)",
+          padding: "clamp(2rem, 4vw, 3.5rem) clamp(1rem, 4vw, 3rem)",
         }}
       >
         <div className="container" style={{ maxWidth: 680, margin: "0 auto" }}>

@@ -850,8 +850,8 @@ a:hover {
 
 /* ---- Section features home ---- */
 .home-features {
-  padding-block: clamp(4rem, 8vw, 8rem);
-  background: var(--white);
+  padding-block: clamp(3rem, 5vw, 5rem);
+  background: var(--sand);
 }
 
 .home-features__grid {
@@ -865,7 +865,7 @@ a:hover {
   padding: 2rem;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--sand);
+  background: var(--white);
   transition:
     border-color 0.2s,
     transform 0.2s;
