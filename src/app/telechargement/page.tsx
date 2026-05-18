@@ -74,7 +74,7 @@ export default function TelechargementPage() {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "0.5rem",
+                gap: "0.2rem",
                 padding: "0.375rem 0.875rem",
                 background: "var(--sand)",
                 border: "1px solid var(--line)",
@@ -85,8 +85,14 @@ export default function TelechargementPage() {
               }}
             >
               <span style={{ fontWeight: 600 }}>v{bookVersion.version}</span>
-              <span style={{ color: "var(--line)" }}>·</span>
-              <span>mise à jour le {bookVersion.lastUpdated}</span>
+              <span
+                style={{
+                  fontWeight: 600,
+                }}
+              >
+                ・
+              </span>
+              <span>Mise à jour le {bookVersion.lastUpdated}</span>
             </div>
           )}
 
