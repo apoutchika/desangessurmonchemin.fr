@@ -48,6 +48,18 @@ export default function HomePage() {
                   Télécharger (ePub/PDF)
                 </Link>
               </div>
+              <p style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.8125rem", color: "var(--muted)" }}>
+                Aussi disponible en{" "}
+                <a
+                  href="https://amzn.eu/d/0elqDxQ8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-underline"
+                  style={{ color: "var(--stone)" }}
+                >
+                  version papier sur Amazon
+                </a>
+              </p>
             </div>
           </div>
         </div>
@@ -167,7 +179,8 @@ export default function HomePage() {
               fontSize: "1.125rem",
             }}
           >
-            Lisez en ligne, emportez-le ou soutenez l'auteur.
+            Le récit est gratuit en ligne et en numérique. Disponible aussi en
+            version papier sur Amazon.
           </p>
 
           <div className="home-features__grid">
@@ -188,11 +201,28 @@ export default function HomePage() {
             <FeatureCard
               icon="☕"
               title="Prix libre"
-              desc="Ce récit est accessible à tous. Si vous le souhaitez, vous pouvez soutenir l'auteur selon vos moyens."
+              desc="Le récit est offert librement. Si le voyage vous a touché, un don soutient l'auteur."
               href="/don"
               cta="Soutenir le projet"
             />
           </div>
+
+          <Link
+            href="https://amzn.eu/d/0elqDxQ8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="paper-banner"
+          >
+            <span className="paper-banner__label">Édition imprimée</span>
+            <div className="paper-banner__body">
+              <span className="paper-banner__icon">📚</span>
+              <div>
+                <p className="paper-banner__title">Envie de le tenir entre les mains ?</p>
+                <p className="paper-banner__sub">Commander la version papier sur Amazon</p>
+              </div>
+            </div>
+            <span className="paper-banner__arrow">→</span>
+          </Link>
         </div>
       </section>
     </>
@@ -205,18 +235,21 @@ function FeatureCard({
   desc,
   href,
   cta,
+  external,
 }: {
   icon: string;
   title: string;
   desc: string;
   href: string;
   cta: string;
+  external?: boolean;
 }) {
   return (
     <Link
       href={href}
       className="feature-card"
       style={{ display: "block", textDecoration: "none" }}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       <div className="feature-card__icon">{icon}</div>
       <h3 className="feature-card__title">{title}</h3>
