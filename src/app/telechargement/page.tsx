@@ -154,68 +154,94 @@ export default function TelechargementPage() {
         </div>
 
         <div className="download-options">
-          <div>
-            <button
-              onClick={() => handleDownload("epub")}
-              className="download-card"
-            >
-              <div className="download-card__info">
+          <button
+            onClick={() => handleDownload("epub")}
+            className="download-card"
+          >
+            <div className="download-card__header">
+              <div className="download-card__icon download-card__icon--epub">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+              </div>
+              <div className="download-card__title-group">
                 <div className="download-card__format">ePub</div>
-                <div className="download-card__desc">
-                  Pour liseuse, iPhone, Android
-                </div>
                 {stats && stats.epub > 0 && (
-                  <div
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "var(--muted)",
-                      marginTop: "0.25rem",
-                    }}
-                  >
+                  <div className="download-card__count">
                     {stats.epub} téléchargement{stats.epub > 1 ? "s" : ""}
                   </div>
                 )}
               </div>
-              <span className="btn btn-outline">↓ Télécharger</span>
-            </button>
-            <button
-              onClick={() => setShowEpubGuide(true)}
-              className="epub-guide-trigger"
-            >
-              Comment le lire ?
-            </button>
-          </div>
+            </div>
+            <p className="download-card__desc">Pour liseuse, iPhone, Android</p>
+            <div className="download-card__platforms">
+              <span className="download-card__tag">Liseuse</span>
+              <span className="download-card__tag">iPhone</span>
+              <span className="download-card__tag">Android</span>
+            </div>
+            <div className="download-card__btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Télécharger
+            </div>
+          </button>
 
           <button
             onClick={() => handleDownload("pdf")}
             className="download-card"
           >
-            <div className="download-card__info">
-              <div className="download-card__format">PDF</div>
-              <div className="download-card__desc">
-                Mise en page soignée, pour écran ou impression
+            <div className="download-card__header">
+              <div className="download-card__icon download-card__icon--pdf">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <line x1="10" y1="9" x2="8" y2="9"/>
+                </svg>
               </div>
-              {stats && stats.pdf > 0 && (
-                <div
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "var(--muted)",
-                    marginTop: "0.25rem",
-                  }}
-                >
-                  {stats.pdf} téléchargement{stats.pdf > 1 ? "s" : ""}
-                </div>
-              )}
+              <div className="download-card__title-group">
+                <div className="download-card__format">PDF</div>
+                {stats && stats.pdf > 0 && (
+                  <div className="download-card__count">
+                    {stats.pdf} téléchargement{stats.pdf > 1 ? "s" : ""}
+                  </div>
+                )}
+              </div>
             </div>
-            <span className="btn btn-outline">↓ Télécharger</span>
+            <p className="download-card__desc">Mise en page soignée, pour écran ou impression</p>
+            <div className="download-card__platforms">
+              <span className="download-card__tag">Écran</span>
+              <span className="download-card__tag">Impression</span>
+            </div>
+            <div className="download-card__btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Télécharger
+            </div>
           </button>
         </div>
+
+        <button
+          onClick={() => setShowEpubGuide(true)}
+          className="epub-guide-trigger"
+        >
+          Comment lire un ePub ?
+        </button>
 
         <p
           style={{
             fontSize: "0.8125rem",
             color: "var(--muted)",
             lineHeight: 1.6,
+            marginTop: "1.5rem",
           }}
         >
           Librement redistribuables dans un cadre non commercial. Si le voyage
