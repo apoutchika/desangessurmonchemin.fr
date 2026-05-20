@@ -13,7 +13,7 @@ const SUBJECT_OPTIONS = [
   "Question sur le récit",
   "Remerciement après un don",
   "Partage d'expérience",
-  "Suggestion ou remarque",
+  "Suggestion, correction ou remarque",
   "Autre",
 ] as const;
 
@@ -196,8 +196,9 @@ export default function ContactPage() {
             marginBottom: "2.5rem",
           }}
         >
-          Une question sur le récit, un mot après un don, ou simplement l'envie
-          d'échanger — je lis chaque message avec plaisir.
+          Une question sur le récit, une correction, un mot après une
+          contribution, ou simplement l'envie d'échanger — je lis chaque
+          message avec plaisir.
         </p>
 
         <form
