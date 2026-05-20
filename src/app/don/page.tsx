@@ -469,35 +469,38 @@ function DonPageContent() {
           )}
 
           <h1 className="simple-page__title" style={{ textAlign: "left" }}>
-            Soutenir ce projet
+            Soutenir l'auteur
           </h1>
-          <p className="simple-page__subtitle" style={{ textAlign: "left" }}>
-            Ce livre est proposé en prix libre : chacun est libre de choisir le
-            montant qui lui semble juste. Si vous avez terminé la lecture et que
-            ce récit vous a touché, accompagné ou inspiré, votre contribution
-            est une belle façon de soutenir ce travail.
-          </p>
-
           <div
             style={{
-              background: "var(--parch)",
-              border: "1px solid var(--line)",
-              borderRadius: "10px",
-              padding: "1.5rem",
+              borderLeft: "3px solid var(--warm)",
+              paddingLeft: "1.25rem",
               marginBottom: "2rem",
-              fontSize: "0.9375rem",
-              color: "var(--earth)",
-              lineHeight: 1.7,
-              fontFamily: "var(--font-serif)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.75rem",
             }}
           >
-            <p style={{ marginBottom: "1rem" }}>
-              Écrire ce livre a demandé des centaines d’heures de travail :
-              marcher, écrire, relire, développer le site web.
+            <p style={{
+              margin: 0,
+              fontSize: "1rem",
+              color: "var(--earth)",
+              lineHeight: 1.75,
+              fontFamily: "var(--font-serif)",
+            }}>
+              La lecture en ligne et les formats numériques sont proposés en
+              prix libre. Écrire ce récit a demandé des centaines d’heures de
+              travail : marcher, écrire, relire, développer le site web.
             </p>
-            <p style={{ margin: 0 }}>
-              Chaque contribution, quelle qu’elle soit, est reçue avec
-              gratitude.
+            <p style={{
+              margin: 0,
+              fontSize: "1rem",
+              color: "var(--earth)",
+              lineHeight: 1.75,
+              fontFamily: "var(--font-serif)",
+            }}>
+              Si ce voyage vous a touché, accompagné ou inspiré, chaque
+              contribution, quelle qu’elle soit, est reçue avec gratitude.
             </p>
           </div>
 
