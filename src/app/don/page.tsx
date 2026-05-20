@@ -489,8 +489,9 @@ function DonPageContent() {
               fontFamily: "var(--font-serif)",
             }}>
               La lecture en ligne et les formats numériques sont proposés en
-              prix libre. Écrire ce récit a demandé des centaines d’heures de
-              travail : marcher, écrire, relire, développer le site web.
+              prix libre — chacun est libre de choisir le montant qui lui
+              semble juste. Écrire ce récit a demandé des centaines d’heures
+              de travail : marcher, écrire, relire, développer le site web.
             </p>
             <p style={{
               margin: 0,

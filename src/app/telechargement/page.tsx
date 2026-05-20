@@ -106,7 +106,7 @@ export default function TelechargementPage() {
         <h1 className="simple-page__title">Téléchargement gratuit</h1>
         <p className="simple-page__subtitle">
           Téléchargement gratuit, contribution libre. Choisissez le format qui
-          convient à votre appareil.
+          convient à votre usage.
         </p>
 
         <div style={{ marginBottom: "0.75rem" }}>
