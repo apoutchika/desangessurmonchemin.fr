@@ -8,6 +8,7 @@ const links = [
   { href: "/", label: "Accueil" },
   { href: "/livre", label: "Livre interactif" },
   { href: "/telechargement", label: "Télécharger" },
+  { href: "https://amzn.eu/d/0elqDxQ8", label: "📦 Version papier", external: true },
   { href: "/don", label: "☕ Soutenir" },
   { href: "/contact", label: "Contact" },
 ];
@@ -23,17 +24,30 @@ export function SiteNav() {
       </Link>
 
       <ul className={`site-nav__links${open ? " site-nav__links--open" : ""}`}>
-        {links.map((l) => (
-          <li key={l.href}>
-            <Link
-              href={l.href}
-              aria-current={pathname === l.href ? "page" : undefined}
-              onClick={() => setOpen(false)}
-            >
-              {l.label}
-            </Link>
-          </li>
-        ))}
+        {links.map((l) =>
+          l.external ? (
+            <li key={l.href}>
+              <a
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+              >
+                {l.label}
+              </a>
+            </li>
+          ) : (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                aria-current={pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href)) ? "page" : undefined}
+                onClick={() => setOpen(false)}
+              >
+                {l.label}
+              </Link>
+            </li>
+          )
+        )}
       </ul>
 
       <button

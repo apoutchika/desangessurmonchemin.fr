@@ -205,7 +205,6 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 300;
-  backdrop-filter: blur(8px);
 }
 
 .site-nav__brand {
@@ -214,13 +213,15 @@ a:hover {
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--ink);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .site-nav__links {
   display: flex;
-  gap: 2rem;
+  gap: clamp(0.75rem, 1.5vw, 2rem);
   list-style: none;
-  font-size: 0.875rem;
+  font-size: clamp(0.7rem, 0.9vw, 0.875rem);
   font-weight: 400;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -232,6 +233,7 @@ a:hover {
   height: 100%;
   display: flex;
   align-items: center;
+  white-space: nowrap;
 }
 
 .site-nav__links a {
@@ -895,6 +897,205 @@ a:hover {
   line-height: 1.6;
 }
 
+/* ---- Guide ePub ---- */
+.epub-guide-trigger {
+  display: block;
+  margin-top: 0.4rem;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--line);
+  transition: color 0.15s;
+}
+
+.epub-guide-trigger:hover {
+  color: var(--stone);
+}
+
+.epub-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 35, 24, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.epub-modal {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 8px 40px rgba(43, 35, 24, 0.18);
+}
+
+.epub-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.epub-modal__title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.epub-modal__close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.epub-modal__close:hover {
+  background: var(--sand);
+  color: var(--ink);
+}
+
+.epub-modal__apps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.epub-modal__app-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.epub-modal__app-row strong {
+  font-size: 0.875rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.epub-modal__app-platforms {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.epub-modal__badge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--stone);
+  background: var(--sand);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+}
+
+.epub-modal__app-desc {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 0.1rem;
+}
+
+/* ---- Banderole version papier ---- */
+.paper-banner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.25rem 1.75rem;
+  background: var(--parch);
+  border: 1px solid var(--warm);
+  border-radius: 12px;
+  text-decoration: none;
+  position: relative;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.paper-banner:hover {
+  border-color: var(--earth);
+  background: #e8dfc9;
+}
+
+.paper-banner__label {
+  position: absolute;
+  top: -0.6rem;
+  left: 1.25rem;
+  background: var(--earth);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.6rem;
+  border-radius: 4px;
+}
+
+.paper-banner__body {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.paper-banner__icon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.paper-banner__title {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.paper-banner__sub {
+  font-size: 0.8125rem;
+  color: var(--stone);
+  margin-top: 0.15rem;
+}
+
+.paper-banner__arrow {
+  font-size: 1.25rem;
+  color: var(--rust);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.paper-banner:hover .paper-banner__arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 480px) {
+  .paper-banner {
+    flex-wrap: wrap;
+  }
+  .paper-banner__arrow {
+    display: none;
+  }
+}
+
 /* ---- Page téléchargement / don ---- */
 .simple-page {
   display: flex;
@@ -1199,36 +1400,68 @@ select:disabled {
   .nav-mobile-toggle {
     display: block;
   }
+
   .site-nav__links {
     display: none;
   }
+
   .site-nav__links--open {
     display: flex;
     flex-direction: column;
-    position: absolute;
+    position: fixed;
     top: var(--nav-h);
     left: 0;
     right: 0;
     background: var(--white);
-    padding: 1.5rem 2rem 2rem;
+    padding: 0;
+    gap: 0;
     border-bottom: 1px solid var(--line);
-    gap: 1.25rem;
-    z-index: 300;
-    align-items: flex-start;
-    animation: slideDown 0.3s var(--ease);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    min-height: 350px; /* Assure un fond suffisant */
+    z-index: 400;
+    animation: slideDown 0.25s var(--ease);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - var(--nav-h));
+    overflow-y: auto;
   }
 
   .site-nav__links--open li {
+    display: block;
     width: 100%;
     height: auto;
   }
 
   .site-nav__links--open a {
+    display: flex;
+    align-items: center;
     width: 100%;
     height: auto;
-    padding: 0.75rem 0;
+    padding: 1rem 2rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--stone);
+    border-bottom: 1px solid var(--line);
+    transition: color 0.15s;
+    position: static;
+  }
+
+  .site-nav__links--open a::after {
+    display: none;
+  }
+
+  .site-nav__links--open li:last-child a {
+    border-bottom: none;
+  }
+
+  .site-nav__links--open a:hover {
+    color: var(--ink);
+  }
+
+  .site-nav__links--open a[aria-current="page"] {
+    color: var(--rust);
+    font-weight: 500;
+    background: var(--parch);
+    padding-left: calc(2rem - 3px);
+    box-shadow: inset 3px 0 0 var(--rust);
   }
 }
 
