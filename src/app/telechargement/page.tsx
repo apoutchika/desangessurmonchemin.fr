@@ -5,6 +5,44 @@ import Link from "next/link";
 
 type BookVersion = { version: string; lastUpdated: string };
 
+const EPUB_GUIDE = [
+  {
+    name: "Apple Livres",
+    platforms: ["iPhone / iPad", "Mac"],
+    desc: "natif, ouvrez simplement le fichier",
+  },
+  {
+    name: "Google Play Livres",
+    platforms: ["Android"],
+    desc: "gratuit, importez l'ePub directement",
+  },
+  {
+    name: "Kindle",
+    platforms: ["iPhone / iPad", "Android", "Liseuse"],
+    desc: "app Amazon sur mobile, envoi par e-mail (@kindle.com) sur liseuse",
+  },
+  {
+    name: "Lithium",
+    platforms: ["Android"],
+    desc: "interface sobre, parfait pour lire sans se perdre dans les options",
+  },
+  {
+    name: "Moon+ Reader",
+    platforms: ["Android"],
+    desc: "plus complet, pour ceux qui aiment personnaliser (polices, thèmes…)",
+  },
+  {
+    name: "Kobo",
+    platforms: ["Liseuse"],
+    desc: "ePub natif, branchez et copiez",
+  },
+  {
+    name: "Calibre",
+    platforms: ["Windows", "Mac", "Linux"],
+    desc: "gratuit, idéal pour gérer sa bibliothèque",
+  },
+];
+
 export default function TelechargementPage() {
   const [stats, setStats] = useState<{
     total: number;
@@ -12,6 +50,7 @@ export default function TelechargementPage() {
     pdf: number;
   } | null>(null);
   const [bookVersion, setBookVersion] = useState<BookVersion | null>(null);
+  const [showEpubGuide, setShowEpubGuide] = useState(false);
 
   useEffect(() => {
     fetch("/api/stats")
@@ -25,9 +64,17 @@ export default function TelechargementPage() {
       .catch(() => setBookVersion(null));
   }, []);
 
+  useEffect(() => {
+    if (showEpubGuide) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [showEpubGuide]);
+
   const handleDownload = async (format: "epub" | "pdf") => {
     try {
-      // Incrémenter le compteur
       const res = await fetch("/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,13 +86,11 @@ export default function TelechargementPage() {
         setStats(data.stats);
       }
 
-      // Tracker dans GA
       if (typeof window !== "undefined") {
         const { trackDownload } = await import("@/lib/analytics");
         trackDownload(format);
       }
 
-      // Télécharger le fichier via l'API — la version dans l'URL garantit un nouveau téléchargement si la version change
       const vParam = bookVersion
         ? `&v=${encodeURIComponent(bookVersion.version)}`
         : "";
@@ -58,17 +103,13 @@ export default function TelechargementPage() {
   return (
     <div className="simple-page">
       <div className="simple-page__inner">
-        <h1 className="simple-page__title">Téléchargement</h1>
+        <h1 className="simple-page__title">Téléchargement gratuit</h1>
         <p className="simple-page__subtitle">
-          Téléchargement gratuit, contribution libre.
-          <br /> Choisissez le format qui convient à votre usage.
+          Téléchargement gratuit, contribution libre. Choisissez le format qui
+          convient à votre appareil.
         </p>
 
-        <div
-          style={{
-            marginBottom: "0.75rem",
-          }}
-        >
+        <div style={{ marginBottom: "0.75rem" }}>
           {bookVersion && (
             <div
               style={{
@@ -85,13 +126,7 @@ export default function TelechargementPage() {
               }}
             >
               <span style={{ fontWeight: 600 }}>v{bookVersion.version}</span>
-              <span
-                style={{
-                  fontWeight: 600,
-                }}
-              >
-                ・
-              </span>
+              <span style={{ fontWeight: 600 }}>・</span>
               <span>Mise à jour le {bookVersion.lastUpdated}</span>
             </div>
           )}
@@ -119,29 +154,37 @@ export default function TelechargementPage() {
         </div>
 
         <div className="download-options">
-          <button
-            onClick={() => handleDownload("epub")}
-            className="download-card"
-          >
-            <div className="download-card__info">
-              <div className="download-card__format">ePub</div>
-              <div className="download-card__desc">
-                Pour liseuse, iPhone, Android
-              </div>
-              {stats && stats.epub > 0 && (
-                <div
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "var(--muted)",
-                    marginTop: "0.25rem",
-                  }}
-                >
-                  {stats.epub} téléchargement{stats.epub > 1 ? "s" : ""}
+          <div>
+            <button
+              onClick={() => handleDownload("epub")}
+              className="download-card"
+            >
+              <div className="download-card__info">
+                <div className="download-card__format">ePub</div>
+                <div className="download-card__desc">
+                  Pour liseuse, iPhone, Android
                 </div>
-              )}
-            </div>
-            <span className="btn btn-outline">↓ Télécharger</span>
-          </button>
+                {stats && stats.epub > 0 && (
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--muted)",
+                      marginTop: "0.25rem",
+                    }}
+                  >
+                    {stats.epub} téléchargement{stats.epub > 1 ? "s" : ""}
+                  </div>
+                )}
+              </div>
+              <span className="btn btn-outline">↓ Télécharger</span>
+            </button>
+            <button
+              onClick={() => setShowEpubGuide(true)}
+              className="epub-guide-trigger"
+            >
+              Comment le lire ?
+            </button>
+          </div>
 
           <button
             onClick={() => handleDownload("pdf")}
@@ -175,14 +218,77 @@ export default function TelechargementPage() {
             lineHeight: 1.6,
           }}
         >
-          Ces fichiers sont librement redistribuables dans un cadre non
-          commercial. Si ce livre vous a touché après l'avoir lu, pensez à{" "}
+          Librement redistribuables dans un cadre non commercial. Si le voyage
+          vous a touché,{" "}
           <Link href="/don" className="link-underline">
-            soutenir l'auteur
+            soutenez l&apos;auteur
           </Link>
           .
         </p>
+
+        <a
+          href="https://amzn.eu/d/0elqDxQ8"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="paper-banner"
+          style={{ marginTop: "2rem" }}
+        >
+          <span className="paper-banner__label">Édition imprimée</span>
+          <div className="paper-banner__body">
+            <span className="paper-banner__icon">📚</span>
+            <div>
+              <p className="paper-banner__title">
+                Envie de le tenir entre les mains ?
+              </p>
+              <p className="paper-banner__sub">
+                Commander la version papier sur Amazon
+              </p>
+            </div>
+          </div>
+          <span className="paper-banner__arrow">→</span>
+        </a>
       </div>
+
+      {showEpubGuide && (
+        <div
+          className="epub-modal-backdrop"
+          onClick={() => setShowEpubGuide(false)}
+        >
+          <div
+            className="epub-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Comment lire un ePub"
+          >
+            <div className="epub-modal__header">
+              <h2 className="epub-modal__title">Comment lire un ePub ?</h2>
+              <button
+                className="epub-modal__close"
+                onClick={() => setShowEpubGuide(false)}
+                aria-label="Fermer"
+              >
+                ✕
+              </button>
+            </div>
+            <ul className="epub-modal__apps">
+              {EPUB_GUIDE.map((app) => (
+                <li key={app.name}>
+                  <div className="epub-modal__app-row">
+                    <strong>{app.name}</strong>
+                    <span className="epub-modal__app-platforms">
+                      {app.platforms.map((p) => (
+                        <span key={p} className="epub-modal__badge">{p}</span>
+                      ))}
+                    </span>
+                  </div>
+                  <span className="epub-modal__app-desc">{app.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
