@@ -3,11 +3,76 @@ import { getJourneyStats } from "@/data/journey";
 import { formatNumber } from "@/lib/formatNumber";
 import { BookCover } from "@/components/ui/BookCover";
 
+const bookSchema = {
+  "@context": "https://schema.org",
+  "@type": "Book",
+  name: "Des anges sur mon chemin",
+  alternateName: "Un printemps vers Santiago",
+  author: {
+    "@type": "Person",
+    name: "Julien Philippon",
+  },
+  description:
+    "De Lyon à Compostelle, 1 815 kilomètres seul mais jamais vraiment. Le récit d'une aventure humaine portée par les rencontres du chemin.",
+  inLanguage: "fr",
+  url: "https://www.desangessurmonchemin.fr",
+  image: "https://www.desangessurmonchemin.fr/cover_hd.jpg",
+  genre: "Récit de voyage",
+  keywords:
+    "Camino de Santiago, pèlerinage, Saint-Jacques-de-Compostelle, Saint-Jacques, chemin de Saint-Jacques, chemin de Compostelle, Compostelle, GR 65, Via Podiensis, récit de voyage, récit de pèlerinage, carnet de voyage, Lyon Compostelle, pèlerin, marche",
+  isbn: "979-8253396025",
+  datePublished: "2026-03-23",
+  workExample: [
+    {
+      "@type": "Book",
+      bookFormat: "https://schema.org/EBook",
+      url: "https://www.desangessurmonchemin.fr/telechargement",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
+      },
+    },
+    {
+      "@type": "Book",
+      bookFormat: "https://schema.org/Paperback",
+      isbn: "979-8253396025",
+      url: "https://amzn.eu/d/0elqDxQ8",
+      offers: {
+        "@type": "Offer",
+        price: "14.90",
+        priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
+        seller: {
+          "@type": "Organization",
+          name: "Amazon",
+        },
+      },
+    },
+  ],
+  potentialAction: {
+    "@type": "ReadAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://www.desangessurmonchemin.fr/livre",
+      actionPlatform: [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform",
+      ],
+    },
+  },
+};
+
 export default function HomePage() {
   const stats = getJourneyStats();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(bookSchema) }}
+      />
       {/* Hero */}
       <section className="home-hero">
         <div className="home-hero__inner">
