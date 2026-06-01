@@ -3,6 +3,20 @@ import { getJourneyStats } from "@/data/journey";
 import { formatNumber } from "@/lib/formatNumber";
 import { BookCover } from "@/components/ui/BookCover";
 
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Des anges sur mon chemin",
+  url: "https://www.desangessurmonchemin.fr",
+  description:
+    "De Lyon à Compostelle, 1 815 kilomètres seul mais jamais vraiment. Le récit d'une aventure humaine portée par les rencontres du chemin.",
+  inLanguage: "fr",
+  author: {
+    "@type": "Person",
+    name: "Julien Philippon",
+  },
+};
+
 const bookSchema = {
   "@context": "https://schema.org",
   "@type": "Book",
@@ -69,6 +83,10 @@ export default function HomePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(bookSchema) }}
