@@ -16,7 +16,7 @@ const bookSchema = {
     "De Lyon à Compostelle, 1 815 kilomètres seul mais jamais vraiment. Le récit d'une aventure humaine portée par les rencontres du chemin.",
   inLanguage: "fr",
   url: "https://www.desangessurmonchemin.fr",
-  image: "https://www.desangessurmonchemin.fr/cover_hd.jpg",
+  image: "https://s3.desangessurmonchemin.fr/Des_anges_sur_mon_chemin.cover.jpg",
   genre: "Récit de voyage",
   keywords:
     "Camino de Santiago, pèlerinage, Saint-Jacques-de-Compostelle, Saint-Jacques, chemin de Saint-Jacques, chemin de Compostelle, Compostelle, GR 65, Via Podiensis, récit de voyage, récit de pèlerinage, carnet de voyage, Lyon Compostelle, pèlerin, marche",
